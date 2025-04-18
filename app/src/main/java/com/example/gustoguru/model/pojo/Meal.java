@@ -1,11 +1,19 @@
 package com.example.gustoguru.model.pojo;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+@Entity(tableName = "meal")
 public class Meal {
+    @PrimaryKey
+    @NonNull
     private String idMeal;
     private String strMeal;
     private String strDrinkAlternate;
@@ -19,6 +27,10 @@ public class Meal {
     private String strImageSource;
     private String strCreativeCommonsConfirmed;
     private String dateModified;
+
+
+    private boolean isFavorite = false;
+    private String plannedDate;
 
     // Ingredients (1-20)
     private String strIngredient1;
@@ -78,6 +90,27 @@ public class Meal {
     public String getStrImageSource() { return strImageSource; }
     public String getStrCreativeCommonsConfirmed() { return strCreativeCommonsConfirmed; }
     public String getDateModified() { return dateModified; }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public String getPlannedDate() {
+        return plannedDate;
+    }
+
+    public void setPlannedDate(String plannedDate) {
+        this.plannedDate = plannedDate;
+    }
+
+    // Helper method to check if meal is planned
+    public boolean isPlanned() {
+        return plannedDate != null && !plannedDate.isEmpty();
+    }
 
     // Setters
     public void setIdMeal(String idMeal) { this.idMeal = idMeal; }
@@ -312,4 +345,22 @@ public class Meal {
             list.add(value);
         }
     }
+
+
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Meal meal = (Meal) o;
+            return Objects.equals(idMeal, meal.idMeal); // Compare by ID only
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(idMeal);
+        }
+
+
 }
