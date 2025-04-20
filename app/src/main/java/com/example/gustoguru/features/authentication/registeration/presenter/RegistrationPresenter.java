@@ -1,5 +1,7 @@
 package com.example.gustoguru.features.authentication.registeration.presenter;
 
+import android.content.Intent;
+
 import com.example.gustoguru.features.authentication.registeration.view.RegistrationView;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.repository.MealRepository;
@@ -78,4 +80,6 @@ public class RegistrationPresenter {
 //        // Delegate to repository
 //        repository.registerWithFacebook(token, callback);
 //    }
+
+
 }

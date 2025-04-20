@@ -10,4 +10,11 @@
     <string name="joining">Join the GustoGang!</string>
     <string name="facebook_app_id">1051192483541674</string>
     <string name="client_id">537371555728-hh24b9mntr4tabq9vmilp1se4vnldg1j.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">your_web_client_id_here</string>
+    <string name="login">Or Login with</string>
+    <string name="haveaccount">Already have an account?</string>
+    <string name="loginn">Login</string>
+    <string name="slogin">Plan meals like a Guru, cook with Gusto!\"</string>
+    <string name="slogen2">Discover. Cook. Enjoy. Repeat.</string>
+
 </resources>

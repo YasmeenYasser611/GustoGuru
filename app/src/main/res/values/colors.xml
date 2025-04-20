@@ -7,4 +7,9 @@
     <color name="fresh_green">#77DD77</color>       <!-- Fresh green for happy vibes -->
     <color name="gentle_pink">#FFB6C1</color>       <!-- Optional: for cute accents -->
     <color name="cool_blue">#AEEEEE</color>         <!-- Optional: for balance -->
+    <color name="gray_light">#E0E0E0</color>  <!-- Light gray for divider -->
+    <color name="light_orange">#FFF3E0</color>  <!-- Light orange for ripple -->
+    <!-- For dark theme -->
+
+    <color name="gray_dark">#FFBDBDBD</color>  <!-- Lighter hint -->
 </resources>

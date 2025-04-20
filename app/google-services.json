@@ -12,7 +12,20 @@
           "package_name": "com.example.gustoguru"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "537371555728-jm1c18q011vkprhd2auilhn93t635rbv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gustoguru",
+            "certificate_hash": "9477eeb6d114ed8436c9486ad2957a9ba8b03dd9"
+          }
+        },
+        {
+          "client_id": "537371555728-hh24b9mntr4tabq9vmilp1se4vnldg1j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBDmv-dtQkGmzacGnzxo4ofKLS_vIh99Dg"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537371555728-hh24b9mntr4tabq9vmilp1se4vnldg1j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
