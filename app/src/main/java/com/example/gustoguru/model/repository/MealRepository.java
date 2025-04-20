@@ -1,17 +1,24 @@
 package com.example.gustoguru.model.repository;
 
+import android.app.Activity;
+
 import androidx.lifecycle.LiveData;
 
 import com.example.gustoguru.model.local.FavoriteMealDao;
 import com.example.gustoguru.model.local.PlannedMealDao;
 import com.example.gustoguru.model.pojo.Meal;
-import com.example.gustoguru.model.remote.client.MealClient;
-import com.example.gustoguru.model.remote.callback.AreaCallback;
-import com.example.gustoguru.model.remote.callback.CategoryCallback;
-import com.example.gustoguru.model.remote.callback.FilteredMealCallback;
-import com.example.gustoguru.model.remote.callback.IngredientCallback;
-import com.example.gustoguru.model.remote.callback.MealCallback;
+import com.example.gustoguru.model.remote.firebase.FirebaseClient;
+import com.example.gustoguru.model.remote.retrofit.client.MealClient;
+import com.example.gustoguru.model.remote.retrofit.callback.AreaCallback;
+import com.example.gustoguru.model.remote.retrofit.callback.CategoryCallback;
+import com.example.gustoguru.model.remote.retrofit.callback.FilteredMealCallback;
+import com.example.gustoguru.model.remote.retrofit.callback.IngredientCallback;
+import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
+//import com.facebook.CallbackManager;
+//import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MealRepository {
@@ -19,25 +26,29 @@ public class MealRepository {
     private final PlannedMealDao plannedMealDao;
     private final MealClient mealClient;
 
+    private final FirebaseClient firebaseClient;
+
     private static MealRepository instance;
 
-    public static synchronized MealRepository getInstance(
-            FavoriteMealDao favoriteMealDao,
-            PlannedMealDao plannedMealDao,
-            MealClient mealClient) {
-        if (instance == null) {
-            instance = new MealRepository(favoriteMealDao, plannedMealDao, mealClient);
+
+
+    public static synchronized MealRepository getInstance(FavoriteMealDao favoriteMealDao, PlannedMealDao plannedMealDao, MealClient mealClient, FirebaseClient firebaseClient)
+    {
+        if (instance == null)
+        {
+            instance = new MealRepository(favoriteMealDao, plannedMealDao, mealClient, firebaseClient);
         }
         return instance;
     }
 
-    private MealRepository(FavoriteMealDao favoriteMealDao,
-                           PlannedMealDao plannedMealDao,
-                           MealClient mealClient) {
+    private MealRepository(FavoriteMealDao favoriteMealDao, PlannedMealDao plannedMealDao, MealClient mealClient, FirebaseClient firebaseClient)
+    {
         this.favoriteMealDao = favoriteMealDao;
         this.plannedMealDao = plannedMealDao;
         this.mealClient = mealClient;
+        this.firebaseClient = firebaseClient;
     }
+
 
     // Remote operations
     public void getRandomMeal(MealCallback callback) {
@@ -95,10 +106,50 @@ public class MealRepository {
         return plannedMealDao.getAllPlannedMeals();
     }
 
-    public void addPlannedMeal(Meal meal, String date) {
+    public void addPlannedMeal(Meal meal, String date)
+    {
         new Thread(() -> {
             meal.setPlannedDate(date);
             plannedMealDao.insertPlannedMeal(meal);
         }).start();
     }
+
+    //FireBase Functions
+    public void login(String email, String password, FirebaseClient.OnAuthCallback callback)
+    {
+        firebaseClient.login(email, password, callback);
+    }
+
+    public void register(String email, String password, FirebaseClient.OnAuthCallback callback)
+    {
+        firebaseClient.register(email, password, callback);
+    }
+
+    public void logout()
+    {
+        firebaseClient.logout();
+    }
+
+    public FirebaseUser getCurrentUser()
+    {
+        return firebaseClient.getCurrentUser();
+    }
+
+    //Facebook
+//    public void initFacebookLogin() {
+//        firebaseClient.initFacebookLogin();
+//    }
+
+//    public CallbackManager getFacebookCallbackManager() {
+//        return firebaseClient.getFacebookCallbackManager();
+//    }
+//
+//    public void handleFacebookLogin(Activity activity, FirebaseClient.OnAuthCallback callback) {
+//        LoginManager.getInstance().logInWithReadPermissions(activity,
+//                Arrays.asList("email", "public_profile"));
+//    }
+//    public void registerWithFacebook(String token, FirebaseClient.OnAuthCallback callback) {
+//        firebaseClient.handleFacebookAccessToken(token, callback);
+//    }
+
 }

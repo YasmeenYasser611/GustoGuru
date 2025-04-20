@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -37,10 +38,18 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.firebase.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+//    implementation ("com.facebook.android:facebook-android-sdk:16.1.3")
+//    implementation ("com.facebook.android:facebook-login:16.1.3")
+
+    implementation ("com.google.android.material:material:1.9.0")
     implementation("com.squareup.retrofit2:retrofit:2.4.9")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -52,4 +61,9 @@ dependencies {
 
     implementation ("androidx.room:room-runtime:2.6.1")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
+//    implementation ("com.facebook.android:facebook-android-sdk:latest.release")
+
+    implementation ("com.google.android.gms:play-services-auth:21.0.0")
+    implementation ("com.google.firebase:firebase-auth")
+
 }

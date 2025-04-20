@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">GustoGuru</string>
+    <string name="Welcom">Welcome to GustoGuru!</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="in">Let’s Munch In!</string>
+    <string name="register">No account yet? Register 🍕</string>
+    <string name="join">Join the Feast 🎉</string>
+    <string name="name">Full Name</string>
+    <string name="joining">Join the GustoGang!</string>
+    <string name="facebook_app_id">1051192483541674</string>
+    <string name="client_id">537371555728-hh24b9mntr4tabq9vmilp1se4vnldg1j.apps.googleusercontent.com</string>
 </resources>

@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         mealRepository = MealRepository.getInstance(
                 AppDatabase.getInstance(this).favoriteMealDao(),
                 AppDatabase.getInstance(this).plannedMealDao(),
-                null
+                null , null
         );
 
         // Create test meal

@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="soft_peach">#FFE5B4</color>         <!-- Light peach background -->
+    <color name="juicy_orange">#FF9248</color>      <!-- Fun orange for buttons/text -->
+    <color name="fresh_green">#77DD77</color>       <!-- Fresh green for happy vibes -->
+    <color name="gentle_pink">#FFB6C1</color>       <!-- Optional: for cute accents -->
+    <color name="cool_blue">#AEEEEE</color>         <!-- Optional: for balance -->
 </resources>
