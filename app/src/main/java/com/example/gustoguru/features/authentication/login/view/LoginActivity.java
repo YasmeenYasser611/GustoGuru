@@ -1,13 +1,18 @@
+
 package com.example.gustoguru.features.authentication.login.view;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gustoguru.R;
@@ -17,122 +22,128 @@ import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.repository.MealRepository;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.facebook.FacebookSdk;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity implements LoginView, OnLoginClickListener {
+
+public class LoginActivity extends AppCompatActivity implements LoginView
+{
     private static final int RC_GOOGLE_SIGN_IN = 9001;
 
     private EditText emailEditText;
     private EditText passwordEditText;
-    private Button loginButton;
-
-    private Button googleRegisterButton;
-
     private LoginPresenter presenter;
     private MealRepository mealRepository;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Initialize Facebook SDK
+        FacebookSdk.setAutoInitEnabled(true);
+        FacebookSdk.fullyInitialize();
+        FacebookSdk.setClientToken(getString(R.string.facebook_client_token));
 
+        initViews();
+        initDependencies();
+        setupClickListeners();
+    }
+
+    private void initViews()
+    {
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
-        loginButton = findViewById(R.id.login);
-        mealRepository = MealRepository.getInstance(
-                AppDatabase.getInstance(this).favoriteMealDao(),
-                AppDatabase.getInstance(this).plannedMealDao(),
-                MealClient.getInstance(),
-                FirebaseClient.getInstance()
-        );
+    }
 
+    private void initDependencies() {
+        mealRepository = MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(), FirebaseClient.getInstance());
+        presenter = new LoginPresenter(this, mealRepository);
+        presenter.initFacebookLogin();
+    }
 
-        presenter = new LoginPresenter(this, MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(), FirebaseClient.getInstance()));
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
+    private void setupClickListeners() {
+        findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                onLoginClick(
+            public void onClick(View v) {
+                presenter.loginUser(
                         emailEditText.getText().toString().trim(),
                         passwordEditText.getText().toString().trim()
                 );
             }
         });
 
-        TextView registerTextView = findViewById(R.id.tv_register);
-        registerTextView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tv_register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
-                startActivity(intent);
+                navigateToRegistration();
             }
         });
 
-        googleRegisterButton = findViewById(R.id.google_register);
+        findViewById(R.id.google_register).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.handleGoogleSignInClick();
+            }
+        });
 
-        googleRegisterButton.setOnClickListener(v -> {
-            Intent signInIntent = mealRepository.getGoogleSignInIntent(
-                    this,
-                    getString(R.string.default_web_client_id)
-            );
-            startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+        findViewById(R.id.fb_register).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.performFacebookLogin();
+            }
         });
     }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_GOOGLE_SIGN_IN) {
+        if (requestCode == RC_GOOGLE_SIGN_IN)
+        {
             if (data == null) {
-                Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
+                onLoginFailure("Sign in cancelled");
                 return;
             }
-
-            mealRepository.handleGoogleSignInResult(data, new FirebaseClient.OnAuthCallback() {
-                @Override
-                public void onSuccess(FirebaseUser user) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(LoginActivity.this, "Signed in with Google", Toast.LENGTH_SHORT).show();
-                        onLoginSuccess();
-                    });
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    runOnUiThread(() -> {
-                        String message = e.getMessage();
-                        if (message == null || message.isEmpty()) {
-                            message = "Sign in failed";
-                        }
-                        Toast.makeText(LoginActivity.this, message,
-                                Toast.LENGTH_LONG).show();
-                    });
-                }
-            });
+            presenter.handleGoogleSignIn(data);
+            return;
         }
+
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public void onLoginClick(String email, String password) {
-        presenter.loginUser(email, password);
+    public void startGoogleSignIn(Intent signInIntent)
+    {
+        startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+    }
+
+    @Override
+    public void navigateToRegistration() {
+        startActivity(new Intent(this, RegistrationActivity.class));
+    }
+
+
+    public Context getActivityContext() {
+        return this;
     }
 
     @Override
     public void showLoading() {
-        loginButton.setEnabled(false);
+        findViewById(R.id.login).setEnabled(false);
     }
 
     @Override
     public void hideLoading() {
-        loginButton.setEnabled(true);
+        findViewById(R.id.login).setEnabled(true);
     }
 
     @Override
     public void onLoginSuccess() {
         Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
-        // Start  home activity here
+        // Start home activity here
     }
 
     @Override
@@ -148,5 +159,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView, OnLog
     @Override
     public void showPasswordError(String message) {
         passwordEditText.setError(message);
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
+    }
+
+    @Override
+    public String getGoogleClientId() {
+        return getString(R.string.default_web_client_id);
     }
 }

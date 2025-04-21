@@ -7,16 +7,21 @@ import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.repository.MealRepository;
 import com.google.firebase.auth.FirebaseUser;
 
-public class RegistrationPresenter {
+
+public class RegistrationPresenter
+{
     private final RegistrationView view;
     private final MealRepository repository;
 
-    public RegistrationPresenter(RegistrationView view, MealRepository repository) {
+    public RegistrationPresenter(RegistrationView view, MealRepository repository)
+    {
         this.view = view;
         this.repository = repository;
     }
 
-    public void registerUser(String email, String password) {
+
+    public void registerUser(String email, String password)
+    {
         if (!validateCredentials(email, password)) {
             return;
         }
@@ -38,7 +43,10 @@ public class RegistrationPresenter {
         });
     }
 
-    private boolean validateCredentials(String email, String password) {
+
+
+    private boolean validateCredentials(String email, String password)
+    {
         boolean isValid = true;
 
         if (email.isEmpty()) {
@@ -60,7 +68,8 @@ public class RegistrationPresenter {
         return isValid;
     }
 
-    private String parseFirebaseError(Exception exception) {
+    private String parseFirebaseError(Exception exception)
+    {
         String errorMessage = exception.getMessage();
         if (errorMessage == null) return "Registration failed";
 
@@ -75,11 +84,4 @@ public class RegistrationPresenter {
         }
         return "Registration failed - please try again";
     }
-
-//    public void registerWithFacebook(String token, FirebaseClient.OnAuthCallback callback) {
-//        // Delegate to repository
-//        repository.registerWithFacebook(token, callback);
-//    }
-
-
 }

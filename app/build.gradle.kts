@@ -47,7 +47,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
 //    implementation ("com.facebook.android:facebook-android-sdk:16.1.3")
-//    implementation ("com.facebook.android:facebook-login:16.1.3")
+//    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation ("com.facebook.android:facebook-login:16.1.3")
 
     implementation ("com.google.android.material:material:1.9.0")
     implementation("com.squareup.retrofit2:retrofit:2.4.9")

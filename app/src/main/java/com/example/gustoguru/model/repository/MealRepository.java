@@ -1,8 +1,13 @@
 package com.example.gustoguru.model.repository;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 
 import androidx.lifecycle.LiveData;
 
@@ -18,6 +23,7 @@ import com.example.gustoguru.model.remote.retrofit.callback.IngredientCallback;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
 //import com.facebook.CallbackManager;
 //import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
@@ -29,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MealRepository {
+
     private final FavoriteMealDao favoriteMealDao;
     private final PlannedMealDao plannedMealDao;
     private final MealClient mealClient;
@@ -148,22 +155,26 @@ public class MealRepository {
 
 
     public Intent getGoogleSignInIntent(Context context, String webClientId) {
-        return FirebaseClient.getInstance()
-                .getGoogleSignInIntent(context, webClientId);
+        return firebaseClient.getGoogleSignInIntent(context, webClientId);
     }
 
     public void handleGoogleSignInResult(Intent data, FirebaseClient.OnAuthCallback callback) {
-        try {
-            GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(data)
-                    .getResult(ApiException.class);
-            if (account != null && account.getIdToken() != null) {
-                FirebaseClient.getInstance().handleGoogleSignInResult(data, callback);
-            } else {
-                callback.onFailure(new Exception("Google Sign-In account or token is null"));
-            }
-        } catch (ApiException e) {
-            callback.onFailure(e);
-        }
+        firebaseClient.handleGoogleSignInResult(data, callback);
     }
+
+
+
+    //facebook
+
+    public CallbackManager getFacebookCallbackManager() {
+        return firebaseClient.getFacebookCallbackManager();
+    }
+
+
+    public void registerFacebookCallback(FirebaseClient.OnAuthCallback callback) {
+        firebaseClient.registerFacebookCallback(callback);
+    }
+
+
 
 }
