@@ -19,15 +19,19 @@
         <activity
             android:name=".features.authentication.registeration.view.RegistrationActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".features.authentication.login.view.LoginActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".features.authentication.login.view.LoginActivity"
-            android:exported="true">
+            android:name=".features.splashscreen.view.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
