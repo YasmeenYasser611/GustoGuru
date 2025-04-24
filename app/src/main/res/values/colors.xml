@@ -12,4 +12,23 @@
     <!-- For dark theme -->
 
     <color name="gray_dark">#FFBDBDBD</color>  <!-- Lighter hint -->
+
+    <!-- Primary Palette (Food-App Friendly) -->
+    <color name="primary_color">#FF6D6D</color>  <!-- Vibrant coral/red -->
+    <color name="primary_dark">#E53935</color>   <!-- Darker shade -->
+    <color name="primary_light">#FFCDD2</color>  <!-- Light pink -->
+
+    <!-- Accent/Secondary Colors -->
+    <color name="accent_color">#4CAF50</color>   <!-- Green for healthy meals -->
+    <color name="accent_dark">#388E3C</color>
+
+    <!-- Backgrounds & Text -->
+    <color name="gray">#757575</color>
+
+    <!-- Chips/Category Tags -->
+    <color name="chip_background">#F5F5F5</color>
+    <color name="chip_stroke">#BDBDBD</color>
+
+
+
 </resources>

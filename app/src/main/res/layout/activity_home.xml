@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFDF9">
+
+    <!-- Top Greeting -->
+    <TextView
+        android:id="@+id/tvGreeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hey Chef Yasmeen! 👩‍🍳"
+        android:textSize="24sp"
+        android:textColor="#444"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"/>
+
+    <!-- Search Bar -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSearch"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/tvGreeting"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_search"/>
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Search meals..."
+                android:background="@null"
+                android:textColor="#333"
+                android:textColorHint="#AAA"
+                android:paddingStart="8dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Meal of the Day Section -->
+    <TextView
+        android:id="@+id/tvMealOfTheDayTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🌟 Meal of the Day"
+        android:textSize="18sp"
+        android:textColor="#444"
+        android:layout_below="@id/cardSearch"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/mealOfTheDayCard"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_below="@id/tvMealOfTheDayTitle"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+        <!-- Content will be populated programmatically -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivMealOfTheDay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:id="@+id/tvMealOfTheDayName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="#80000000"
+                android:textColor="#FFF"
+                android:textSize="20sp"
+                android:padding="16dp"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Categories Title -->
+    <TextView
+        android:id="@+id/tvCategories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Categories 🍱"
+        android:textSize="18sp"
+        android:textColor="#444"
+        android:layout_below="@id/mealOfTheDayCard"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/categoriesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCategories"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="8dp" />
+
+    <!-- Meals Title (will change based on selection) -->
+
+    <!-- Meal Grid RecyclerView -->
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:backgroundTint="#FFF2E8"
+        android:background="@drawable/bottom_nav_bg"
+        app:itemIconTint="@drawable/nav_selector"
+        app:itemTextColor="@drawable/nav_selector"
+        app:menu="@menu/bottom_nav_menu"/>
+</RelativeLayout>

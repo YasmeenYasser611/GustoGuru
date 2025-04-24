@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    android:backgroundTint="#FFFFFF"
+    app:rippleColor="#80FFFFFF">
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
+
+        <!-- Category Image (Top) -->
+        <ImageView
+            android:id="@+id/imageViewThumb"
+            android:layout_width="140dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="8dp"
+            android:clipToOutline="true"
+        android:outlineProvider="background"
+        android:src="@drawable/placeholder_meal" />
+
+        <!-- Category Name (Below Image) -->
+        <TextView
+            android:id="@+id/textViewCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Category Name"
+            android:textColor="#333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />  <!-- Slightly more spacing between letters for clarity -->
+
+        <!-- Description (Collapsed to 1 line) -->
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Description..."
+            android:textColor="#666"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:letterSpacing="0.03" />  <!-- Subtle spacing for better readability -->
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
+
+
+
+
+
+
+
+
+

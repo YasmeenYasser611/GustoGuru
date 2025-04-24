@@ -1,0 +1,75 @@
+package com.example.gustoguru.features.home.view;
+
+
+
+import static android.app.ProgressDialog.show;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.gustoguru.R;
+import com.example.gustoguru.features.home.presenter.HomePresenter;
+import com.example.gustoguru.model.pojo.Category;
+import com.example.gustoguru.model.pojo.FilteredMeal;
+import com.example.gustoguru.model.pojo.Meal;
+import com.example.gustoguru.model.repository.MealRepository;
+import com.example.gustoguru.model.remote.firebase.FirebaseClient;
+import com.example.gustoguru.model.remote.retrofit.client.MealClient;
+import com.example.gustoguru.model.local.AppDatabase;
+import com.facebook.CallbackManager;
+import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HomeActivity extends AppCompatActivity implements HomeView {
+    private HomePresenter presenter;
+
+
+    private RecyclerView categoriesContainer;
+
+    private  CategoryAdapter categoryAdapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
+
+
+        categoryAdapter= new CategoryAdapter(HomeActivity.this, new ArrayList<>());
+
+
+        presenter = new HomePresenter(this , MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(), FirebaseClient.getInstance()));
+
+        categoriesContainer = findViewById(R.id.categoriesContainer);
+        categoriesContainer.setHasFixedSize(true);
+        categoriesContainer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        presenter.getAllCategories();
+    }
+
+
+    @Override
+    public void showCategories(List<Category> categories)
+    {
+        categoryAdapter.setCategories(categories);
+        categoriesContainer.setAdapter(categoryAdapter);
+        categoryAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void showError(String message) {
+        Toast.makeText(HomeActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+
+    }
+}

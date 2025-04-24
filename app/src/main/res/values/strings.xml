@@ -18,5 +18,11 @@
     <string name="loginn">Login</string>
     <string name="slogin">Plan meals like a Guru, cook with Gusto!\"</string>
     <string name="slogen2">Discover. Cook. Enjoy. Repeat.</string>
+    <string name="meal_image">Meal Image</string>
+    <string name="featured_meals">Featured Meals 👇</string>
+    <string name="categories">Categories 🍱</string>
+    <string name="meal_of_the_day">🌟 Meal of the Day</string>
+    <string name="search_meals">Search meals...</string>
+    <string name="hey_chef">Hey Chef %s! 👩‍🍳</string>
 
 </resources>
