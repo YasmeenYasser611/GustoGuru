@@ -25,16 +25,21 @@ import java.util.List;
 import java.util.Map;
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
     private Context context;
-    private Map<String, String> ingredientMeasureMap;
+    private List<Map.Entry<String, String>> ingredientEntries;
 
     public IngredientsAdapter(Context context) {
         this.context = context;
-        this.ingredientMeasureMap = new LinkedHashMap<>();
+        this.ingredientEntries = new ArrayList<>();
     }
 
     public void setMeal(Map<String, String> ingredientMeasureMap) {
-        this.ingredientMeasureMap = ingredientMeasureMap != null ?
-                ingredientMeasureMap : new LinkedHashMap<>();
+        this.ingredientEntries.clear();
+
+        if (ingredientMeasureMap != null) {
+            // Convert map entries to a list
+            this.ingredientEntries.addAll(ingredientMeasureMap.entrySet());
+        }
+
         notifyDataSetChanged();
     }
 
@@ -48,21 +53,24 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String ingredient = (String) ingredientMeasureMap.keySet().toArray()[position];
-        String measure = ingredientMeasureMap.get(ingredient);
+        Map.Entry<String, String> entry = ingredientEntries.get(position);
+        String ingredient = entry.getKey();
+        String measure = entry.getValue();
 
         holder.textViewIngredient.setText(ingredient);
         holder.textViewMeasure.setText(measure);
 
-        // Load image
+        // Load ingredient image
         Glide.with(context)
                 .load("https://www.themealdb.com/images/ingredients/" + ingredient + "-Small.png")
+                .placeholder(R.drawable.placeholder_meal)
+                .error(R.drawable.placeholder_meal)
                 .into(holder.imageViewThumb);
     }
 
     @Override
     public int getItemCount() {
-        return ingredientMeasureMap.size();
+        return ingredientEntries.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

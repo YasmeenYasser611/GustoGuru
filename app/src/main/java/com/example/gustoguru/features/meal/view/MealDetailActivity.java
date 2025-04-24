@@ -3,6 +3,7 @@ package com.example.gustoguru.features.meal.view;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -36,20 +37,41 @@ import java.util.regex.Pattern;
 
 
 public class MealDetailActivity extends AppCompatActivity implements MealDetailView {
-
-    private RecyclerView recyclerView;
-    private IngredientsAdapter ingredientsAdapter;
     private MealDetailPresenter presenter;
+    private IngredientsAdapter ingredientsAdapter;
+
+    // Views
+    private ProgressBar progressBar;
+    private ImageView ivMeal;
+    private ImageButton btnFavorite;
+    private TextView tvMealName, tvCategory, tvArea, tvInstructions;
+    private YouTubePlayerView youtubePlayerView;
+    private RecyclerView rvIngredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_detail);
 
-        // Initialize adapter
-        ingredientsAdapter = new IngredientsAdapter(this);
+        // Initialize views
+        progressBar = findViewById(R.id.progressBar);
+        ivMeal = findViewById(R.id.ivMeal);
+        btnFavorite = findViewById(R.id.btnFavorite);
+        tvMealName = findViewById(R.id.tvMealName);
+        tvCategory = findViewById(R.id.tvCategory);
+        tvArea = findViewById(R.id.tvArea);
+        tvInstructions = findViewById(R.id.tvInstructions);
+        youtubePlayerView = findViewById(R.id.youtubePlayerView);
+        rvIngredients = findViewById(R.id.rvIngredients);
+        rvIngredients.setHasFixedSize(true);
 
-        // Initialize presenter with repository
+//        rvIngredients.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        // Setup RecyclerView
+        ingredientsAdapter = new IngredientsAdapter(this);
+        rvIngredients.setLayoutManager(new LinearLayoutManager(this));
+        rvIngredients.setAdapter(ingredientsAdapter);
+
+        // Initialize presenter
         presenter = new MealDetailPresenter(
                 this,
                 MealRepository.getInstance(
@@ -60,44 +82,128 @@ public class MealDetailActivity extends AppCompatActivity implements MealDetailV
                 )
         );
 
-        // Setup RecyclerView
-        recyclerView = findViewById(R.id.rvIngredients);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(ingredientsAdapter);
-
-        // Get meal ID from intent and load data
+        // Get meal ID from intent
         String mealId = getIntent().getStringExtra("MEAL_ID");
-        if (mealId != null && !mealId.isEmpty()) {
-            presenter.getMealDetails(mealId);
-        } else {
-            showError("No meal ID provided");
+        if (mealId == null || mealId.isEmpty()) {
+            showError("Invalid meal ID");
             finish();
+            return;
         }
+
+
+        // Load meal details
+        presenter.getMealDetails(mealId);
+
+        // Setup favorite button click listener
+        btnFavorite.setOnClickListener(v -> presenter.toggleFavorite());
     }
 
-    // Implement MealDetailView methods (only the ones we need for ingredients)
+    // Implement MealDetailView methods
+    @Override
+    public void showLoading() {
+        runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
+    }
+
+    @Override
+    public void hideLoading() {
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+    }
+
     @Override
     public void showMealDetails(Meal meal) {
-        // We'll use this to update other views if needed
+        runOnUiThread(() -> {
+            // Set basic meal info
+            tvMealName.setText(meal.getStrMeal());
+            tvCategory.setText(meal.getStrCategory());
+            tvArea.setText(meal.getStrArea());
+            tvInstructions.setText(meal.getStrInstructions());
+
+            // Load meal image
+            Glide.with(this)
+                    .load(meal.getStrMealThumb())
+                    .into(ivMeal);
+
+            // Update favorite button
+            updateFavoriteButton(meal.isFavorite());
+        });
     }
+
 
     @Override
     public void showIngredients(Map<String, String> ingredientMeasureMap) {
-        // Update adapter with the ingredients
+        Log.d("MealDetail", "Ingredients Map Size: " + ingredientMeasureMap.size());
+        for (Map.Entry<String, String> entry : ingredientMeasureMap.entrySet()) {
+            Log.d("MealDetail", "Ingredient: " + entry.getKey() + " | Measure: " + entry.getValue());
+        }
         ingredientsAdapter.setMeal(ingredientMeasureMap);
     }
 
     @Override
-    public void showError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public void showInstructions(String instructions) {
+
     }
 
-    // Unused methods from interface (could be abstract class instead)
-    @Override public void showLoading() {}
-    @Override public void hideLoading() {}
-    @Override public void showInstructions(String instructions) {}
-    @Override public void showYoutubeVideo(String videoUrl) {}
-    @Override public void showFavoriteStatus(boolean isFavorite) {}
-    @Override public void navigateBack() {}
+    @Override
+    public void showYoutubeVideo(String videoUrl) {
+        runOnUiThread(() -> {
+            if (videoUrl == null || videoUrl.isEmpty()) {
+                youtubePlayerView.setVisibility(View.GONE);
+                return;
+            }
+
+            String videoId = extractYouTubeId(videoUrl);
+            if (videoId == null) {
+                youtubePlayerView.setVisibility(View.GONE);
+                return;
+            }
+
+            youtubePlayerView.setVisibility(View.VISIBLE);
+            getLifecycle().addObserver(youtubePlayerView);
+
+            youtubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+                @Override
+                public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                    youTubePlayer.cueVideo(videoId, 0);
+                }
+            });
+        });
+    }
+
+    @Override
+    public void showFavoriteStatus(boolean isFavorite) {
+        runOnUiThread(() -> updateFavoriteButton(isFavorite));
+    }
+
+    @Override
+    public void showError(String message) {
+        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public void navigateBack() {
+        finish();
+    }
+
+    private void updateFavoriteButton(boolean isFavorite) {
+        int iconRes = isFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border;
+        btnFavorite.setImageResource(iconRes);
+    }
+
+    private String extractYouTubeId(String url) {
+        String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\\?video_id=)([^#\\&\\?\\n]*)";
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(url);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (youtubePlayerView != null) {
+            youtubePlayerView.release();
+        }
+    }
 }
