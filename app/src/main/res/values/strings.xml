@@ -24,5 +24,10 @@
     <string name="meal_of_the_day">🌟 Meal of the Day</string>
     <string name="search_meals">Search meals...</string>
     <string name="hey_chef">Hey Chef %s! 👩‍🍳</string>
+    <string name="meal_image_desc">Image of the meal</string>
+    <string name="youtube_video_desc">YouTube video tutorial</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="instructions">Instructions</string>
+    <string name="ingredient_image">Ingredient image</string>
 
 </resources>

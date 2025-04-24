@@ -58,13 +58,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             holder.textViewCategory.setText(category.getStrCategory());
             holder.textViewDescription.setText(category.getStrCategoryDescription());
 
-//            Glide.with(context)
-//                    .load(category.getStrCategoryThumb())
-//                    .apply(new RequestOptions()
-//                            .override(200, 200)
-//                            .placeholder(R.drawable.ic_launcher_background)
-//                            .error(R.drawable.ic_launcher_foreground))
-//                    .into(holder.imageViewThumb);
 
             Glide.with(context)
                     .load(category.getStrCategoryThumb())

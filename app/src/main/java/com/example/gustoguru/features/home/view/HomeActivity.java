@@ -6,29 +6,24 @@ import static android.app.ProgressDialog.show;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
+import com.example.gustoguru.features.meal.view.MealDetailActivity;
 import com.example.gustoguru.model.pojo.Category;
-import com.example.gustoguru.model.pojo.FilteredMeal;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.repository.MealRepository;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.local.AppDatabase;
-import com.facebook.CallbackManager;
-import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +94,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
             Intent intent = new Intent(this, MealDetailActivity.class);
             intent.putExtra("MEAL_ID", meal.getIdMeal());
             startActivity(intent);
+
         });
     }
 }
+

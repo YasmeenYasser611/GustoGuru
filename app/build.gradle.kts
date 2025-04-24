@@ -33,39 +33,52 @@ android {
 }
 
 dependencies {
-
+    // AndroidX and Material
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+
+    // Firebase
     implementation(libs.firebase.auth)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-//    implementation ("com.facebook.android:facebook-android-sdk:16.1.3")
-//    implementation ("com.google.android.gms:play-services-auth:20.7.0")
-    implementation ("com.facebook.android:facebook-login:16.1.3")
+    // Facebook
+    implementation("com.facebook.android:facebook-login:16.1.3")
 
-    implementation ("com.google.android.material:material:1.9.0")
-    implementation("com.squareup.retrofit2:retrofit:2.4.9")
-
+    // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
+    // Google Play Services
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    // Lottie Animations
+    implementation("com.airbnb.android:lottie:6.3.0")
+
+    // YouTube Player (choose ONE of these)
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.0.0")
+    // OR if you need official YouTube API
+    // implementation("com.google.android.gms:play-services-youtube:18.0.1")
+
+    // Glide (image loading)
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    implementation ("androidx.room:room-runtime:2.6.1")
-    annotationProcessor ("androidx.room:room-compiler:2.6.1")
-//    implementation ("com.facebook.android:facebook-android-sdk:latest.release")
-
-    implementation ("com.google.android.gms:play-services-auth:21.0.0")
-    implementation ("com.google.firebase:firebase-auth")
-
-    implementation ("com.airbnb.android:lottie:6.3.0" )
+    // UI Components
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.google.android.material:material:1.11.0")
 }
