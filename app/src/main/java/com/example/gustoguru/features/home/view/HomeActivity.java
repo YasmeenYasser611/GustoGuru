@@ -4,8 +4,10 @@ package com.example.gustoguru.features.home.view;
 
 import static android.app.ProgressDialog.show;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
 import com.example.gustoguru.model.pojo.Category;
@@ -38,11 +41,17 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
     private  CategoryAdapter categoryAdapter;
 
+    private TextView tvMealOfTheDayName ;
+
+    private ImageView ivMealOfTheDay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        ivMealOfTheDay = findViewById(R.id.ivMealOfTheDay);
+        tvMealOfTheDayName= findViewById(R.id.tvMealOfTheDayName);
 
 
         categoryAdapter= new CategoryAdapter(HomeActivity.this, new ArrayList<>());
@@ -54,6 +63,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
         categoriesContainer.setHasFixedSize(true);
         categoriesContainer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
+        presenter.getRandomMeal();
         presenter.getAllCategories();
     }
 
@@ -71,5 +81,24 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     public void showError(String message) {
         Toast.makeText(HomeActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
 
+    }
+
+    @Override
+    public void showMealOfTheDay(Meal meal) {
+        // Set meal name
+        tvMealOfTheDayName.setText(meal.getStrMeal());
+
+        // Load meal image with Glide
+        Glide.with(this)
+                .load(meal.getStrMealThumb())
+                .centerCrop()
+                .into(ivMealOfTheDay);
+
+        // Optional: Make the card clickable
+        findViewById(R.id.mealOfTheDayCard).setOnClickListener(v -> {
+            Intent intent = new Intent(this, MealDetailActivity.class);
+            intent.putExtra("MEAL_ID", meal.getIdMeal());
+            startActivity(intent);
+        });
     }
 }

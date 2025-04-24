@@ -1,6 +1,8 @@
 package com.example.gustoguru.features.home.presenter;
 
 
+import android.util.Log;
+
 import com.example.gustoguru.features.home.view.HomeView;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.Meal;
@@ -22,6 +24,27 @@ public class HomePresenter {
     }
 
 
+
+    public void getRandomMeal() {
+        repository.getRandomMeal(new MealCallback() {
+            @Override
+            public void onSuccess(List<Meal> meals) {
+                if (meals != null && !meals.isEmpty()) {
+                    Log.d("RandomMeal", "Meal: " + meals.get(0).getStrMeal() + ", Image: " + meals.get(0).getStrMealThumb());
+                    view.showMealOfTheDay(meals.get(0));
+                } else {
+                    view.showError("No meal found");
+                }
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.showError(message);
+                Log.d("RandomMeal", "Meal: " +  "Cannot get Random meal " );
+            }
+        });
+    }
+
     public void getAllCategories() {
 
         repository.getAllCategories(new CategoryCallback() {
@@ -42,6 +65,8 @@ public class HomePresenter {
             }
         });
     }
+
+
 
 
 }

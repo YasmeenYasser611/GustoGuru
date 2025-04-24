@@ -17,6 +17,9 @@
         android:theme="@style/Theme.GustoGuru"
         tools:targetApi="31">
         <activity
+            android:name=".features.home.view.MealDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".features.home.view.HomeActivity"
             android:exported="false" />
         <activity
