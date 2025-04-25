@@ -1,5 +1,8 @@
 package com.example.gustoguru.features.meal.presenter;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+
 import com.example.gustoguru.features.meal.view.MealDetailView;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
@@ -11,6 +14,7 @@ public class MealDetailPresenter {
     private final MealDetailView view;
     private final MealRepository repository;
     private Meal currentMeal;
+    private boolean isFavorite = false;
 
     public MealDetailPresenter(MealDetailView view, MealRepository repository) {
         this.view = view;
@@ -45,35 +49,35 @@ public class MealDetailPresenter {
     public void toggleFavorite() {
         if (currentMeal == null) return;
 
-//        boolean newFavoriteStatus = !currentMeal.isFavorite();
-//        currentMeal.setFavorite(newFavoriteStatus);
-//
-//        repository.toggleFavorite(currentMeal, new FavoriteCallback() {
-//            @Override
-//            public void onSuccess() {
-//                view.showFavoriteStatus(newFavoriteStatus);
-//            }
-//
-//            @Override
-//            public void onFailure(String error) {
-//                view.showError("Failed to update favorite: " + error);
-//                // Revert the UI state if the operation failed
-//                view.showFavoriteStatus(!newFavoriteStatus);
-//            }
-//        });
+        if (isFavorite) {
+            repository.removeFavorite(currentMeal);
+            isFavorite = false;
+        } else {
+            repository.addFavorite(currentMeal);
+            isFavorite = true;
+        }
+        view.showFavoriteStatus(isFavorite);
     }
 
     private void checkFavoriteStatus() {
-//        repository.isFavorite(currentMeal.getIdMeal(), new FavoriteCallback() {
-//            @Override
-//            public void onSuccess() {
-//                view.showFavoriteStatus(currentMeal.isFavorite());
-//            }
-//
-//            @Override
-//            public void onFailure(String error) {
-//                view.showError("Failed to check favorite status: " + error);
-//            }
-//        });
+        if (currentMeal == null || currentMeal.getIdMeal() == null) return;
+
+        LiveData<List<Meal>> favoritesLiveData = repository.getAllFavorites();
+        favoritesLiveData.observeForever(new Observer<List<Meal>>() {
+            @Override
+            public void onChanged(List<Meal> meals) {
+                isFavorite = false;
+                if (meals != null) {
+                    for (Meal meal : meals) {
+                        if (meal.getIdMeal() != null && meal.getIdMeal().equals(currentMeal.getIdMeal())) {
+                            isFavorite = true;
+                            break;
+                        }
+                    }
+                }
+                view.showFavoriteStatus(isFavorite);
+                favoritesLiveData.removeObserver(this);
+            }
+        });
     }
 }

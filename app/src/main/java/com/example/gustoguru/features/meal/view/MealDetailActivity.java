@@ -145,7 +145,7 @@ public class MealDetailActivity extends AppCompatActivity implements MealDetailV
 
     @Override
     public void showYoutubeVideo(String videoUrl) {
-        runOnUiThread(() -> {
+
             if (videoUrl == null || videoUrl.isEmpty()) {
                 youtubePlayerView.setVisibility(View.GONE);
                 return;
@@ -166,17 +166,19 @@ public class MealDetailActivity extends AppCompatActivity implements MealDetailV
                     youTubePlayer.cueVideo(videoId, 0);
                 }
             });
-        });
+
     }
 
     @Override
     public void showFavoriteStatus(boolean isFavorite) {
-        runOnUiThread(() -> updateFavoriteButton(isFavorite));
+        updateFavoriteButton(isFavorite);
+
     }
 
     @Override
     public void showError(String message) {
-        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
