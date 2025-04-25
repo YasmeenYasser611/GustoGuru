@@ -2,6 +2,7 @@ package com.example.gustoguru.features.meal.view;
 
 import com.example.gustoguru.model.pojo.Meal;
 
+import java.util.Calendar;
 import java.util.Map;
 
 public interface MealDetailView {
@@ -10,11 +11,18 @@ public interface MealDetailView {
 
     void showMealDetails(Meal meal);
     void showIngredients(Map<String, String> ingredientMeasureMap);
-    void showInstructions(String instructions);
+
     void showYoutubeVideo(String videoUrl);
 
     void showFavoriteStatus(boolean isFavorite);
     void showError(String message);
 
-    void navigateBack();
+
+
+    void showPlannerSuccess(String date);
+
+
+    void showCalendarSuccess();
+    void requestCalendarPermission(int requestCode);
+    void showDatePicker(Calendar minDate, Calendar maxDate);
 }

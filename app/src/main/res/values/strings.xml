@@ -29,5 +29,8 @@
     <string name="ingredients">Ingredients</string>
     <string name="instructions">Instructions</string>
     <string name="ingredient_image">Ingredient image</string>
+    <string name="meal_added_to_planner">Meal added to planner for %1$s</string>
+    <string name="calendar_event_title">Meal: %1$s</string>
+    <string name="added_to_device_calendar">Added to device calendar</string>
 
 </resources>

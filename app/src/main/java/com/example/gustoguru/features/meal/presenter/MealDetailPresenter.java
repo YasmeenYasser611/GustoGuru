@@ -1,25 +1,33 @@
 package com.example.gustoguru.features.meal.presenter;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import com.example.gustoguru.features.meal.view.CalendarManager;
 import com.example.gustoguru.features.meal.view.MealDetailView;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
 import com.example.gustoguru.model.repository.MealRepository;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MealDetailPresenter {
     private final MealDetailView view;
     private final MealRepository repository;
     private Meal currentMeal;
     private boolean isFavorite = false;
+    private final CalendarManager calendarManager;
 
-    public MealDetailPresenter(MealDetailView view, MealRepository repository) {
+    public MealDetailPresenter(MealDetailView view, MealRepository repository , Context context) {
         this.view = view;
         this.repository = repository;
+        this.calendarManager = new CalendarManager(context);
     }
+
 
     public void getMealDetails(String mealId) {
         view.showLoading();
@@ -77,6 +85,46 @@ public class MealDetailPresenter {
                 }
                 view.showFavoriteStatus(isFavorite);
                 favoritesLiveData.removeObserver(this);
+            }
+        });
+    }
+
+
+
+    public void handleDateSelected(Calendar selectedDate)
+    {
+        if (currentMeal == null) {
+            view.showError("No meal selected");
+            return;
+        }
+
+        // Format date for our planner
+        String formattedDate = String.format(Locale.getDefault(),
+                "%04d-%02d-%02d",
+                selectedDate.get(Calendar.YEAR),
+                selectedDate.get(Calendar.MONTH) + 1,
+                selectedDate.get(Calendar.DAY_OF_MONTH));
+
+
+        repository.addPlannedMeal(currentMeal, formattedDate);
+        view.showPlannerSuccess(formattedDate);
+
+
+        calendarManager.addMealToCalendar(currentMeal, selectedDate, new CalendarManager.CalendarOperationCallback()
+        {
+            @Override
+            public void onSuccess() {
+                view.showCalendarSuccess();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                view.showError(message);
+            }
+
+            @Override
+            public void onPermissionRequired(int requestCode) {
+                view.requestCalendarPermission(requestCode);
             }
         });
     }
