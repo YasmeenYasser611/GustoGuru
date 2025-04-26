@@ -17,8 +17,6 @@ public interface MealDetailView {
     void showFavoriteStatus(boolean isFavorite);
     void showError(String message);
 
-
-
     void showPlannerSuccess(String date);
 
 

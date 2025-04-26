@@ -99,9 +99,19 @@ public class MealRepository {
     }
 
     public void addFavorite(Meal meal) {
+        if (meal == null || meal.getIdMeal() == null) return;
+
         new Thread(() -> {
             meal.setFavorite(true);
-            favoriteMealDao.insertFavorite(meal);
+            if (favoriteMealDao.mealExists(meal.getIdMeal()) > 0)
+            {
+                // Meal exists - just update favorite status
+                favoriteMealDao.updateFavoriteStatus(meal.getIdMeal(), true);
+            } else
+            {
+                // Meal doesn't exist - insert new meal with favorite flag
+                favoriteMealDao.insertFavorite(meal);
+            }
         }).start();
     }
 
@@ -109,9 +119,10 @@ public class MealRepository {
         if (meal == null || meal.getIdMeal() == null) return;
 
         new Thread(() -> {
-            // First check if the meal exists in the database
-            if (favoriteMealDao.isFavorite(meal.getIdMeal())) {
-                favoriteMealDao.deleteFavorite(meal);
+            meal.setFavorite(false);
+            // Only update if meal exists (don't insert new meal for removal)
+            if (favoriteMealDao.mealExists(meal.getIdMeal()) > 0) {
+                favoriteMealDao.updateFavoriteStatus(meal.getIdMeal(), false);
             }
         }).start();
     }

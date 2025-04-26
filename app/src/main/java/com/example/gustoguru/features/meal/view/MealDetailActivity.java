@@ -223,7 +223,8 @@ public class MealDetailActivity extends AppCompatActivity implements MealDetailV
     }
 
     @Override
-    public void showDatePicker(Calendar minDate, Calendar maxDate) {
+    public void showDatePicker(Calendar minDate, Calendar maxDate)
+    {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 (view, year, month, day) -> {

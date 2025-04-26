@@ -26,5 +26,11 @@ public interface FavoriteMealDao {
     @Query("SELECT isFavorite FROM meal WHERE idMeal = :mealId")
     boolean isFavorite(String mealId);
 
+    @Query("UPDATE meal SET isFavorite = :isFavorite WHERE idMeal = :mealId")
+    void updateFavoriteStatus(String mealId, boolean isFavorite);
+
+    @Query("SELECT COUNT(*) FROM meal WHERE idMeal = :mealId")
+    int mealExists(String mealId);
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.gustoguru.model.pojo;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -29,6 +30,7 @@ public class Meal {
     private String dateModified;
 
 
+    @ColumnInfo(name = "isFavorite")
     private boolean isFavorite = false;
     private String plannedDate;
 
