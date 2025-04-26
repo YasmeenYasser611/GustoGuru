@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.favorites.view.FavoritesActivity;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
 import com.example.gustoguru.features.meal.view.MealDetailActivity;
 import com.example.gustoguru.model.pojo.Category;
@@ -24,6 +25,7 @@ import com.example.gustoguru.model.repository.MealRepository;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.local.AppDatabase;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,24 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
         presenter.getRandomMeal();
         presenter.getAllCategories();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_fav ) {
+                navigateToFavorites();
+                return true;
+            }
+            // Handle other menu items if needed
+            return false;
+        });
+
+
+    }
+
+    private void navigateToFavorites() {
+        Intent intent = new Intent(this, FavoritesActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
 

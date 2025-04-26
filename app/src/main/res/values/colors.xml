@@ -30,5 +30,9 @@
     <color name="chip_stroke">#BDBDBD</color>
 
 
+    <!-- Modern red palette -->
+    <color name="red_500">#F44336</color>  <!-- Primary red -->
+    <color name="red_600">#E53935</color>  <!-- Darker for pressed state -->
+    <color name="red_100">#FFCDD2</color>  <!-- Light background tint -->
 
 </resources>

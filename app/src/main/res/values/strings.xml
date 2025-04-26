@@ -33,4 +33,11 @@
     <string name="calendar_event_title">Meal: %1$s</string>
     <string name="added_to_device_calendar">Added to device calendar</string>
 
+    <string name="no_favorites">No favorite meals yet</string>
+    <string name="action_remove_favorite">Remove from favorites</string>
+
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="planner">Planner</string>
+
 </resources>
