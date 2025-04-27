@@ -65,7 +65,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_fav ) {
+            if (item.getItemId() == R.id.nav_fav )
+            {
                 navigateToFavorites();
                 return true;
             }

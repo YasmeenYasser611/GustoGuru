@@ -14,7 +14,8 @@ import com.example.gustoguru.model.pojo.Meal;
 
 
     @Database(entities = {Meal.class}, version = 1)
-    public abstract class AppDatabase extends RoomDatabase {
+    public abstract class AppDatabase extends RoomDatabase
+    {
         public abstract FavoriteMealDao favoriteMealDao();
         public abstract PlannedMealDao plannedMealDao();
 

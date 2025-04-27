@@ -9,4 +9,7 @@ public interface FavoritesView {
     void showError(String message);
     void showLoading();
     void hideLoading();
+    void showUndoSnackbar(Meal meal);
+    void removeMealAt(int position);
+    void insertMealAt(Meal meal, int position);
 }

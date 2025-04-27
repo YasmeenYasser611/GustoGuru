@@ -1,5 +1,7 @@
 package com.example.gustoguru.features.favorites.view;
 
+import static com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback.DISMISS_EVENT_ACTION;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +24,7 @@ import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.repository.MealRepository;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +40,13 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
-        // Initialize views
         progressBar = findViewById(R.id.progressBar);
         recyclerView = findViewById(R.id.rv_favorites);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Reuse your existing MealAdapter or create a new one
         adapter = new MealAdapter(this, new ArrayList<>(), this::onMealClick, this::onFavoriteClick);
         recyclerView.setAdapter(adapter);
 
-        // Initialize presenter
         presenter = new FavoritesPresenter(
                 this,
                 MealRepository.getInstance(
@@ -57,7 +57,6 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
                 )
         );
 
-        // Load favorites
         presenter.loadFavorites();
     }
 
@@ -67,8 +66,8 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
         startActivity(intent);
     }
 
-    private void onFavoriteClick(Meal meal) {
-        presenter.toggleFavorite(meal);
+    private void onFavoriteClick(Meal meal, int position) {
+        presenter.toggleFavorite(meal, position);
     }
 
     @Override
@@ -89,5 +88,45 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
     @Override
     public void hideLoading() {
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showUndoSnackbar(Meal meal) {
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                "Meal removed from favorites",
+                Snackbar.LENGTH_LONG
+        );
+
+        snackbar.setAction("UNDO", v -> {
+            if (!isFinishing() && !isDestroyed()) {
+                presenter.undoLastRemoval();
+            }
+        });
+
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                if (event != DISMISS_EVENT_ACTION && !isFinishing() && !isDestroyed()) {
+                    presenter.loadFavorites();
+                }
+            }
+        });
+
+        snackbar.show();
+    }
+
+    @Override
+    public void removeMealAt(int position) {
+        adapter.removeAt(position);
+        if (adapter.getItemCount() == 0) {
+            showError("No favorites found");
+        }
+    }
+
+    @Override
+    public void insertMealAt(Meal meal, int position) {
+        adapter.insertAt(meal, position);
+        recyclerView.scrollToPosition(position);
     }
 }

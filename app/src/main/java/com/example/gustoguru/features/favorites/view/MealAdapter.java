@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.model.pojo.Meal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
@@ -27,13 +28,13 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
                        OnMealClickListener mealClickListener,
                        OnFavoriteClickListener favoriteClickListener) {
         this.context = context;
-        this.meals = meals;
+        this.meals = new ArrayList<>(meals);
         this.mealClickListener = mealClickListener;
         this.favoriteClickListener = favoriteClickListener;
     }
 
     public void updateMeals(List<Meal> meals) {
-        this.meals = meals;
+        this.meals = new ArrayList<>(meals);
         notifyDataSetChanged();
     }
 
@@ -54,15 +55,27 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
                 .into(holder.ivMeal);
 
         holder.itemView.setOnClickListener(v -> mealClickListener.onClick(meal));
-        holder.btnFavorite.setOnClickListener(v -> {
-            favoriteClickListener.onClick(meal);
-            notifyItemChanged(position); // Update the icon immediately
-        });
 
-        // Set favorite icon state
         int favoriteIcon = meal.isFavorite() ?
                 R.drawable.ic_favorite : R.drawable.ic_favorite_border;
         holder.btnFavorite.setImageResource(favoriteIcon);
+        holder.btnFavorite.setOnClickListener(v -> {
+            int currentPosition = holder.getAdapterPosition();
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                favoriteClickListener.onClick(meals.get(currentPosition), currentPosition);
+            }
+        });
+    }
+
+    public void removeAt(int position) {
+        meals.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, meals.size());
+    }
+
+    public void insertAt(Meal meal, int position) {
+        meals.add(position, meal);
+        notifyItemInserted(position);
     }
 
     @Override
@@ -70,8 +83,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
         return meals.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder
-    {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivMeal;
         TextView tvMealName;
         ImageButton btnFavorite;
@@ -89,6 +101,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
     }
 
     public interface OnFavoriteClickListener {
-        void onClick(Meal meal);
+        void onClick(Meal meal, int position);
     }
 }
