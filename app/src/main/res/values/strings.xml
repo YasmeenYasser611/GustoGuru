@@ -39,5 +39,6 @@
     <string name="home">Home</string>
     <string name="favorites">Favorites</string>
     <string name="planner">Planner</string>
+    <string name="no_planned_meals">No planned meals found</string>
 
 </resources>

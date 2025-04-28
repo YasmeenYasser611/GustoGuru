@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.favorites.view;
+package com.example.gustoguru.features.weekly_planner.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gustoguru.R;
-import com.example.gustoguru.features.favorites.presenter.FavoritesPresenter;
 import com.example.gustoguru.features.meal.view.MealAdapter;
 import com.example.gustoguru.features.meal.view.MealDetailActivity;
+import com.example.gustoguru.features.weekly_planner.presenter.PlannedPresenter;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
@@ -24,8 +24,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoritesActivity extends AppCompatActivity implements FavoritesView {
-    private FavoritesPresenter presenter;
+public class PlannedActivity extends AppCompatActivity implements PlannedView {
+    private PlannedPresenter presenter;
     private RecyclerView recyclerView;
     private MealAdapter adapter;
     private ProgressBar progressBar;
@@ -33,16 +33,16 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favorites);
+        setContentView(R.layout.activity_planned);
 
         progressBar = findViewById(R.id.progressBar);
-        recyclerView = findViewById(R.id.rv_favorites);
+        recyclerView = findViewById(R.id.rv_planned);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new MealAdapter(this, new ArrayList<>(), this::onMealClick, this::onFavoriteClick);
+        adapter = new MealAdapter(this, new ArrayList<>(), this::onMealClick, null); // No favorite click here
         recyclerView.setAdapter(adapter);
 
-        presenter = new FavoritesPresenter(
+        presenter = new PlannedPresenter(
                 this,
                 MealRepository.getInstance(
                         AppDatabase.getInstance(this).favoriteMealDao(),
@@ -52,7 +52,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
                 )
         );
 
-        presenter.loadFavorites();
+        presenter.loadPlannedMeals();
     }
 
     private void onMealClick(Meal meal) {
@@ -61,14 +61,12 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
         startActivity(intent);
     }
 
-    private void onFavoriteClick(Meal meal, int position) {
-        presenter.toggleFavorite(meal, position);
-    }
-
     @Override
-    public void showFavorites(List<Meal> meals) {
+    public void showPlannedMeals(List<Meal> meals) {
         adapter.updateMeals(meals);
     }
+
+
 
     @Override
     public void showError(String message) {
@@ -89,7 +87,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
     public void showUndoSnackbar(Meal meal) {
         Snackbar snackbar = Snackbar.make(
                 findViewById(android.R.id.content),
-                "Meal removed from favorites",
+                "Meal removed from planned meals",
                 Snackbar.LENGTH_LONG
         );
 
@@ -103,7 +101,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 if (event != DISMISS_EVENT_ACTION && !isFinishing() && !isDestroyed()) {
-                    presenter.loadFavorites();
+                    presenter.loadPlannedMeals();
                 }
             }
         });
@@ -115,7 +113,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesVie
     public void removeMealAt(int position) {
         adapter.removeAt(position);
         if (adapter.getItemCount() == 0) {
-            showError("No favorites found");
+            showError("No planned meals found");
         }
     }
 

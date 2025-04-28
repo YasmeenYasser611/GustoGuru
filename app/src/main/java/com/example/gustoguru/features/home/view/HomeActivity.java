@@ -19,6 +19,7 @@ import com.example.gustoguru.R;
 import com.example.gustoguru.features.favorites.view.FavoritesActivity;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
 import com.example.gustoguru.features.meal.view.MealDetailActivity;
+import com.example.gustoguru.features.weekly_planner.view.PlannedActivity;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.repository.MealRepository;
@@ -65,9 +66,11 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_fav )
-            {
+            if (item.getItemId() == R.id.nav_fav) {
                 navigateToFavorites();
+                return true;
+            } else if (item.getItemId() == R.id.nav_planner) {
+                navigateToPlannedMeals();
                 return true;
             }
             // Handle other menu items if needed
@@ -75,6 +78,12 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
         });
 
 
+    }
+
+    private void navigateToPlannedMeals() {
+        Intent intent = new Intent(this, PlannedActivity.class);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     private void navigateToFavorites() {

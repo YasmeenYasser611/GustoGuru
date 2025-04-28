@@ -65,5 +65,21 @@ android:ellipsize="end"/>
     android:src="@drawable/ic_favorite"
     app:tint="@color/red_500" />
 
+    <TextView
+        android:id="@+id/tv_planned_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/iv_meal"
+        android:layout_alignStart="@id/iv_meal"
+        android:layout_margin="8dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_date_chip"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+
 </RelativeLayout>
     </androidx.cardview.widget.CardView>

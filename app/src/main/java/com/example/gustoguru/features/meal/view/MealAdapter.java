@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.favorites.view;
+package com.example.gustoguru.features.meal.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -54,17 +54,32 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
                 .load(meal.getStrMealThumb())
                 .into(holder.ivMeal);
 
+        // Show planned date if available
+        if (meal.getPlannedDate() != null && !meal.getPlannedDate().isEmpty())
+        {
+            holder.tvPlannedDate.setText(meal.getPlannedDate());
+            holder.tvPlannedDate.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvPlannedDate.setVisibility(View.GONE);
+        }
+
         holder.itemView.setOnClickListener(v -> mealClickListener.onClick(meal));
 
-        int favoriteIcon = meal.isFavorite() ?
-                R.drawable.ic_favorite : R.drawable.ic_favorite_border;
-        holder.btnFavorite.setImageResource(favoriteIcon);
-        holder.btnFavorite.setOnClickListener(v -> {
-            int currentPosition = holder.getAdapterPosition();
-            if (currentPosition != RecyclerView.NO_POSITION) {
-                favoriteClickListener.onClick(meals.get(currentPosition), currentPosition);
-            }
-        });
+        // Only show favorite button if we have a click listener for it
+        if (favoriteClickListener != null) {
+            int favoriteIcon = meal.isFavorite() ?
+                    R.drawable.ic_favorite : R.drawable.ic_favorite_border;
+            holder.btnFavorite.setImageResource(favoriteIcon);
+            holder.btnFavorite.setOnClickListener(v -> {
+                int currentPosition = holder.getAdapterPosition();
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    favoriteClickListener.onClick(meals.get(currentPosition), currentPosition);
+                }
+            });
+            holder.btnFavorite.setVisibility(View.VISIBLE);
+        } else {
+            holder.btnFavorite.setVisibility(View.GONE);
+        }
     }
 
     public void removeAt(int position) {
@@ -86,12 +101,14 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivMeal;
         TextView tvMealName;
+        TextView tvPlannedDate; // Add this
         ImageButton btnFavorite;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivMeal = itemView.findViewById(R.id.iv_meal);
             tvMealName = itemView.findViewById(R.id.tv_meal_name);
+            tvPlannedDate = itemView.findViewById(R.id.tv_planned_date); // Add this
             btnFavorite = itemView.findViewById(R.id.btn_favorite);
         }
     }
