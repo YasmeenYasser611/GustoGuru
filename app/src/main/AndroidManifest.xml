@@ -19,6 +19,9 @@
         android:theme="@style/Theme.GustoGuru"
         tools:targetApi="31">
         <activity
+            android:name=".features.search.view.SearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".features.weekly_planner.view.PlannedActivity"
             android:exported="false" />
         <activity

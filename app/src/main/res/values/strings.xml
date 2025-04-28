@@ -41,4 +41,6 @@
     <string name="planner">Planner</string>
     <string name="no_planned_meals">No planned meals found</string>
 
+    <string name="search">Search</string>
+
 </resources>

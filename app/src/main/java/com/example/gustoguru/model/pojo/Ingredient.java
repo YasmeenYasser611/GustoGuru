@@ -2,7 +2,8 @@ package com.example.gustoguru.model.pojo;
 
 
 
-public class Ingredient {
+public class Ingredient
+{
     private String idIngredient;
     private String strIngredient;
     private String strDescription;

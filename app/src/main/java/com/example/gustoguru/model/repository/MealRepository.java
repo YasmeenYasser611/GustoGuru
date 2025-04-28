@@ -92,6 +92,14 @@ public class MealRepository {
     public void getAllIngredients(IngredientCallback callback) {
         mealClient.getAllIngredients(callback);
     }
+    // In MealRepository.java
+    public void filterByIngredient(String ingredient, FilteredMealCallback callback) {
+        mealClient.filterByIngredient(ingredient, callback);
+    }
+
+    public void filterByArea(String area, FilteredMealCallback callback) {
+        mealClient.filterByArea(area, callback);
+    }
 
     // Local operations
     public LiveData<List<Meal>> getAllFavorites() {
@@ -133,7 +141,8 @@ public class MealRepository {
 
     public void addPlannedMeal(Meal meal, String date)
     {
-        new Thread(() -> {
+        new Thread(() ->
+        {
             meal.setPlannedDate(date);
             plannedMealDao.insertPlannedMeal(meal);
         }).start();

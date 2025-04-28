@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.favorites.view.FavoritesActivity;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
 import com.example.gustoguru.features.meal.view.MealDetailActivity;
+import com.example.gustoguru.features.search.view.SearchActivity;
 import com.example.gustoguru.features.weekly_planner.view.PlannedActivity;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.Meal;
@@ -69,8 +71,21 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
             if (item.getItemId() == R.id.nav_fav) {
                 navigateToFavorites();
                 return true;
-            } else if (item.getItemId() == R.id.nav_planner) {
+            }
+            else if (item.getItemId() == R.id.nav_planner) {
                 navigateToPlannedMeals();
+                return true;
+            }
+            else if (item.getItemId() == R.id.nav_profile) {
+            navigateToLogin();
+            return true;
+              }
+            else if (item.getItemId() == R.id.nav_search) {
+                navigateToSearch();
+                return true;
+            }
+            else if (item.getItemId() == R.id.nav_home) {
+                navigateToHome();
                 return true;
             }
             // Handle other menu items if needed
@@ -80,6 +95,16 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
     }
 
+    private void navigateToSearch() {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+    private void navigateToHome() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
     private void navigateToPlannedMeals() {
         Intent intent = new Intent(this, PlannedActivity.class);
         startActivity(intent);
@@ -90,6 +115,11 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
         Intent intent = new Intent(this, FavoritesActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+    private void navigateToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
 

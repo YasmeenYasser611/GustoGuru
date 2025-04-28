@@ -1,10 +1,20 @@
 package com.example.gustoguru.model.pojo;
 
 
-public class FilteredMeal {
+public class FilteredMeal
+{
     private String idMeal;
     private String strMeal;
+
+    public FilteredMeal(String idMeal, String strMeal, String strMealThumb) {
+        this.idMeal = idMeal;
+        this.strMeal = strMeal;
+        this.strMealThumb = strMealThumb;
+    }
+
     private String strMealThumb;
+
+
 
     // Getters
     public String getIdMeal() { return idMeal; }

@@ -21,7 +21,8 @@ import com.example.gustoguru.model.pojo.Meal;
 
         private static volatile AppDatabase INSTANCE;
 
-        public static AppDatabase getInstance(Context context) {
+        public static AppDatabase getInstance(Context context)
+        {
             if (INSTANCE == null) {
                 synchronized (AppDatabase.class) {
                     if (INSTANCE == null) {

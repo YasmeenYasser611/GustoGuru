@@ -30,9 +30,8 @@ public class MealClient {
     private static MealClient instance;
     private final MealService mealService;
 
-    private MealClient() {
-
-
+    private MealClient()
+    {
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -48,7 +47,8 @@ public class MealClient {
         mealService = retrofit.create(MealService.class);
     }
 
-    public static synchronized MealClient getInstance() {
+    public static synchronized MealClient getInstance()
+    {
         if (instance == null) {
             instance = new MealClient();
         }
@@ -56,7 +56,8 @@ public class MealClient {
     }
 
     // Random Meal
-    public void getRandomMeal(MealCallback callback) {
+    public void getRandomMeal(MealCallback callback)
+    {
         mealService.getRandomMeal().enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
@@ -187,6 +188,44 @@ public class MealClient {
             }
         });
     }
+
+    // In MealClient.java
+    public void filterByIngredient(String ingredient, FilteredMealCallback callback) {
+        mealService.filterByIngredient(ingredient).enqueue(new Callback<FilteredMealsResponse>() {
+            @Override
+            public void onResponse(Call<FilteredMealsResponse> call, Response<FilteredMealsResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                    callback.onSuccess(response.body().getMeals());
+                } else {
+                    callback.onFailure("No meals found with ingredient: " + ingredient);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FilteredMealsResponse> call, Throwable t) {
+                callback.onFailure("Ingredient filter failed: " + t.getMessage());
+            }
+        });
+    }
+
+    public void filterByArea(String area, FilteredMealCallback callback) {
+        mealService.filterByArea(area).enqueue(new Callback<FilteredMealsResponse>() {
+            @Override
+            public void onResponse(Call<FilteredMealsResponse> call, Response<FilteredMealsResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                    callback.onSuccess(response.body().getMeals());
+                } else {
+                    callback.onFailure("No meals found from area: " + area);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FilteredMealsResponse> call, Throwable t) {
+                callback.onFailure("Area filter failed: " + t.getMessage());
+            }
+        });
+    }
+
 
     // Helper method for error messages
     private String getErrorMessage(Response<?> response) {
