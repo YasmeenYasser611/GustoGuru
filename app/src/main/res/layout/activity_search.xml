@@ -1,63 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
+    <!-- Results List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchResultsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="140dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"/>
+
+    <!-- Search Container (centered initially) -->
     <LinearLayout
+        android:id="@+id/searchContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:elevation="8dp">
 
-        <!-- Search Container with Dropdown -->
-        <LinearLayout
+        <!-- Search Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp">
 
-            <!-- Search Method Dropdown -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/searchMethodContainer"
-                android:layout_width="140dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginEnd="8dp"
-                app:endIconDrawable="@drawable/ic_arrow_drop_down"
-                app:endIconMode="dropdown_menu">
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:gravity="center_vertical">
 
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/searchMethodSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:focusable="false"
-                    android:hint="Search by"
-                    android:clickable="true"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Search Bar -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/searchContainer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="Search...">
+                <ImageView
+                    android:id="@+id/searchIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_search"/>
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/searchEditText"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="Search meals..."
                     android:imeOptions="actionSearch"
-                    android:inputType="text"/>
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
+                    android:inputType="text"
+                    android:maxLines="1"/>
 
-        <!-- Dynamic Filter Chips - Now scrollable when many items -->
+                <ImageButton
+                    android:id="@+id/btnCloseSearch"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_close"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Search Method Selector -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/methodContainer"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:endIconMode="dropdown_menu">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/searchMethodSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:hint="Search by"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <!-- Horizontal Suggestions RecyclerView -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/filterGroup"
             android:layout_width="match_parent"
@@ -65,21 +103,20 @@
             android:layout_marginTop="8dp"
             app:singleSelection="true"/>
 
-        <!-- Results RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchResultsRecyclerView"
+            android:id="@+id/suggestionsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="2"/>
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:reverseLayout="false"/>
     </LinearLayout>
-</ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+</FrameLayout>
