@@ -34,5 +34,11 @@
     <color name="red_500">#F44336</color>  <!-- Primary red -->
     <color name="red_600">#E53935</color>  <!-- Darker for pressed state -->
     <color name="red_100">#FFCDD2</color>  <!-- Light background tint -->
+    <color name="fun_chip_color">#FF8A65</color> <!-- A soft orange-pink tone -->
+
+
+    <color name="brown">#6D4C41</color>
+
+
 
 </resources>

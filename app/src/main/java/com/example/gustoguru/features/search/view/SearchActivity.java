@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -125,7 +127,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         });
     }
 
-    private void initViews() {
+    private void initViews()
+    {
         searchResultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
         progressBar = findViewById(R.id.progressBar);
         searchEditText = findViewById(R.id.searchEditText);
@@ -135,7 +138,16 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         suggestionsRecyclerView = findViewById(R.id.suggestionsRecyclerView);
         searchMethodSpinner = findViewById(R.id.searchMethodSpinner);
 
-//        filterGroup = findViewById(R.id.filterGroup);
+        // Set initial state
+        btnCloseSearch.setVisibility(View.GONE);
+        searchIcon.setVisibility(View.VISIBLE);
+
+        // Center the search container initially
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) searchContainer.getLayoutParams();
+        params.gravity = Gravity.CENTER;
+        searchContainer.setLayoutParams(params);
+
+
     }
 
 
@@ -164,7 +176,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
     }
 
     // Your original animation methods - completely preserved
-    private void setupSearchBarAnimations() {
+    private void setupSearchBarAnimations()
+    {
         searchEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 expandSearch();
@@ -192,7 +205,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         btnCloseSearch.setVisibility(View.VISIBLE);
         searchIcon.setVisibility(View.GONE);
 
-        // Move search bar to top when expanded
+        // Move to top with smaller margin
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) searchContainer.getLayoutParams();
         params.gravity = Gravity.TOP;
         params.topMargin = getResources().getDimensionPixelSize(R.dimen.search_margin_top);
@@ -201,7 +214,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         showKeyboard();
     }
 
-    private void collapseSearch() {
+    private void collapseSearch()
+    {
         if (!isSearchExpanded) return;
         isSearchExpanded = false;
 
@@ -211,9 +225,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         btnCloseSearch.setVisibility(View.GONE);
         searchIcon.setVisibility(View.VISIBLE);
 
-        // Move search bar back to center when collapsed
+        // Remove this line to prevent returning to center
+        // params.gravity = Gravity.CENTER;
+
+        // Instead, just update the top margin if needed
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) searchContainer.getLayoutParams();
-        params.gravity = Gravity.CENTER;
+        params.topMargin = getResources().getDimensionPixelSize(R.dimen.search_margin_top);
         searchContainer.setLayoutParams(params);
 
         hideKeyboard();
@@ -255,14 +272,45 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
 
     private void performSearch() {
         String query = searchEditText.getText().toString().trim();
-        String method = searchMethodSpinner.getText().toString();
 
-        if (!query.isEmpty()) {
-            if (method.equals("Name")) {
-                presenter.searchByName(query);
-            }
-            searchEditText.clearFocus();
+        if (query.isEmpty()) {
+            showError("Please enter a search term");
+            return;
         }
+
+        // Auto-detect search type with priority:
+        // 1. Exact category match
+        // 2. Exact area match
+        // 3. Exact ingredient match
+        // 4. Default to name search
+
+        for (Category c : allCategories) {
+            if (c.getStrCategory().equalsIgnoreCase(query)) {
+                searchMethodSpinner.setText("Category", false);
+                presenter.searchByCategory(query);
+                return;
+            }
+        }
+
+        for (Area a : allAreas) {
+            if (a.getStrArea().equalsIgnoreCase(query)) {
+                searchMethodSpinner.setText("Area", false);
+                presenter.searchByArea(query);
+                return;
+            }
+        }
+
+        for (Ingredient i : allIngredients) {
+            if (i.getStrIngredient().equalsIgnoreCase(query)) {
+                searchMethodSpinner.setText("Ingredient", false);
+                presenter.searchByIngredient(query);
+                return;
+            }
+        }
+
+        // Default to name search
+        searchMethodSpinner.setText("Name", false);
+        presenter.searchByName(query);
     }
 
     private void setupSearchMethodSpinner() {
@@ -272,6 +320,16 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
                 R.layout.dropdown_menu_item,
                 searchMethods
         );
+        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            Log.d("SearchDebug", "Editor action: " + actionId);
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                performSearch();
+                hideKeyboard();
+                return true;
+            }
+            return false;
+        });
 
         searchMethodSpinner.setAdapter(spinnerAdapter);
         searchMethodSpinner.setText(searchMethods[0], false);
@@ -297,7 +355,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         }
     }
 
-    private void filterSuggestions(String query) {
+    private void filterSuggestions(String query)
+    {
         if (query.isEmpty()) {
             suggestionAdapter.updateSuggestions(Collections.emptyList());
             return;
@@ -333,10 +392,15 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         suggestionAdapter.updateSuggestions(filtered);
     }
 
+
     // SearchView implementation
     @Override
     public void showSearchResults(List<FilteredMeal> meals) {
-        adapter.updateMeals(meals);
+        if (meals == null || meals.isEmpty()) {
+            showError("No meals found"); // This will show a toast via your existing showError method
+        } else {
+            adapter.updateMeals(meals);
+        }
     }
 
     @Override

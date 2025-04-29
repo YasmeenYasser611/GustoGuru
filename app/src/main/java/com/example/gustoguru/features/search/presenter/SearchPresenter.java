@@ -1,5 +1,7 @@
 package com.example.gustoguru.features.search.presenter;
 
+import android.util.Log;
+
 import com.example.gustoguru.features.search.view.SearchView;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
@@ -26,6 +28,8 @@ public class SearchPresenter {
     }
 
     public void searchByName(String query) {
+        Log.d("SearchDebug", "Presenter.searchByName called with: " + query);
+
         if (query.isEmpty()) {
             view.showError("Please enter a search term");
             return;
@@ -35,6 +39,7 @@ public class SearchPresenter {
         repository.searchMealsByName(query, new MealCallback() {
             @Override
             public void onSuccess(List<Meal> meals) {
+                Log.d("SearchDebug", "Repository returned " + meals.size() + " meals");
                 view.hideLoading();
                 if (meals.isEmpty()) {
                     view.showError("No meals found");
@@ -53,6 +58,7 @@ public class SearchPresenter {
 
             @Override
             public void onFailure(String message) {
+                Log.e("SearchDebug", "Search failed: " + message);
                 view.hideLoading();
                 view.showError(message);
             }

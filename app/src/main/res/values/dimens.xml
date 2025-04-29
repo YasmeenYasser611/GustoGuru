@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="search_margin_top">16dp</dimen>
+    <dimen name="search_initial_margin_top">150dp</dimen> <!-- Adjust as needed -->
+
 </resources>
