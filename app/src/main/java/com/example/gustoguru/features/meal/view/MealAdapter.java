@@ -59,7 +59,9 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
         {
             holder.tvPlannedDate.setText(meal.getPlannedDate());
             holder.tvPlannedDate.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else
+        {
             holder.tvPlannedDate.setVisibility(View.GONE);
         }
 

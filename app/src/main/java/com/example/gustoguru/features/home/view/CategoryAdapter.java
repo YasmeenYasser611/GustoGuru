@@ -27,18 +27,20 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
     private Context context;
     private List<Category> categories;
+    private OnCategoryClickListener listener;
 
-
-    public CategoryAdapter(Context context, List<Category> categories )
-    {
-        this.context= context;
-        this.categories = categories;
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category);
     }
 
+    public CategoryAdapter(Context context, List<Category> categories, OnCategoryClickListener listener) {
+        this.context = context;
+        this.categories = categories;
+        this.listener = listener;
+    }
 
     public void setCategories(List<Category> categories) {
-        this.categories.clear();
-        this.categories.addAll(categories);
+        this.categories = categories;
         notifyDataSetChanged();
     }
 
@@ -51,44 +53,33 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
-        {
-            Category category = categories.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Category category = categories.get(position);
+        holder.textViewCategory.setText(category.getStrCategory());
+        holder.textViewDescription.setText(category.getStrCategoryDescription());
 
-            holder.textViewCategory.setText(category.getStrCategory());
-            holder.textViewDescription.setText(category.getStrCategoryDescription());
-
-
-            Glide.with(context)
-                    .load(category.getStrCategoryThumb())
-                    .override(120, 80)  // Matches ImageView dimensions
-                    .centerCrop()
-                    .into(holder.imageViewThumb);
+        Glide.with(context)
+                .load(category.getStrCategoryThumb())
+                .override(120, 80)
+                .centerCrop()
+                .into(holder.imageViewThumb);
 
         holder.layout.setOnClickListener(v -> {
-            Toast.makeText(context, category.getStrCategory(), Toast.LENGTH_SHORT).show();
+            if (listener != null) {
+                listener.onCategoryClick(category);
+            }
         });
-
-
-        }
-
+    }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return categories != null ? categories.size() : 0;
     }
 
-
-
-
-    public static class ViewHolder extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewCategory, textViewDescription;
         ImageView imageViewThumb;
-
         LinearLayout layout;
-
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
