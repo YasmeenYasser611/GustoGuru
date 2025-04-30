@@ -94,7 +94,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
 
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         setupPersonalizedGreeting(); // Refresh when returning to activity
     }
@@ -145,10 +146,20 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
+            SessionManager sessionManager = new SessionManager(this);
+
             if (id == R.id.nav_fav) {
+                if (!sessionManager.isLoggedIn()) {
+                    showLoginRequiredDialog("Please login to view your favorites");
+                    return false; // Prevent navigation
+                }
                 navigateToFavorites();
                 return true;
             } else if (id == R.id.nav_planner) {
+                if (!sessionManager.isLoggedIn()) {
+                    showLoginRequiredDialog("Please login to view your meal planner");
+                    return false; // Prevent navigation
+                }
                 navigateToPlannedMeals();
                 return true;
             } else if (id == R.id.nav_profile) {
@@ -163,6 +174,17 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
             }
             return false;
         });
+    }
+
+    private void showLoginRequiredDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Login Required")
+                .setMessage(message)
+                .setPositiveButton("Login", (dialog, which) -> {
+                    startActivity(new Intent(this, LoginActivity.class));
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void checkLoginAndNavigateToProfile() {

@@ -1,6 +1,7 @@
 package com.example.gustoguru.features.meal.view;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -27,7 +28,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.meal.presenter.MealDetailPresenter;
+import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
@@ -80,12 +83,37 @@ public class MealDetailActivity extends AppCompatActivity implements MealDetailV
         tvInstructions = findViewById(R.id.tvInstructions);
         youtubePlayerView = findViewById(R.id.youtubePlayerView);
 
-        ImageButton btnAddToCalendar = findViewById(R.id.btnAddToCalendar);
-        btnAddToCalendar.setOnClickListener(v -> showDatePickerForNextWeek());
-        btnFavorite.setOnClickListener(v -> presenter.toggleFavorite());
+
 
         rvIngredients = findViewById(R.id.rvIngredients);
         rvIngredients.setHasFixedSize(true);
+        SessionManager sessionManager = new SessionManager(this);
+        if (!sessionManager.isLoggedIn()) {
+            btnFavorite.setImageResource(R.drawable.ic_favorite_border); // Force empty heart
+            btnFavorite.setAlpha(0.5f); // Make it look disabled
+
+        }
+
+        btnFavorite.setOnClickListener(v -> {
+
+
+            if (!sessionManager.isLoggedIn()) {
+
+                showLoginRequired("Please register or login to add favorites");
+                return;
+            }
+            presenter.toggleFavorite();
+        });
+
+        ImageButton btnAddToCalendar = findViewById(R.id.btnAddToCalendar);
+        btnAddToCalendar.setOnClickListener(v -> {
+
+            if (!sessionManager.isLoggedIn()) {
+                showLoginRequired("Please register or login to plan meals");
+                return;
+            }
+            showDatePickerForNextWeek();
+        });
     }
 
     private void setupRecyclerView() {
@@ -126,6 +154,20 @@ public class MealDetailActivity extends AppCompatActivity implements MealDetailV
     @Override
     public void hideLoading() {
         runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+    }
+
+    @Override
+    public void showLoginRequired(String message) {
+        runOnUiThread(() -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Login Required")
+                    .setMessage(message)
+                    .setPositiveButton("Login", (dialog, which) -> {
+                        startActivity(new Intent(this, LoginActivity.class));
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
     }
 
     @Override

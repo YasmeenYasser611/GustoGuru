@@ -23,4 +23,6 @@ public interface MealDetailView {
     void showCalendarSuccess();
     void requestCalendarPermission(int requestCode);
     void showDatePicker(Calendar minDate, Calendar maxDate);
+
+    void showLoginRequired(String message);
 }

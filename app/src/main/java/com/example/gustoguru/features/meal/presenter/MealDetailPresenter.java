@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer;
 
 import com.example.gustoguru.features.meal.view.CalendarManager;
 import com.example.gustoguru.features.meal.view.MealDetailView;
+import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
 import com.example.gustoguru.model.repository.MealRepository;
@@ -21,12 +22,15 @@ public class MealDetailPresenter {
     private Meal currentMeal;
     private boolean isFavorite = false;
     private final CalendarManager calendarManager;
+    private final SessionManager sessionManager;
 
-    public MealDetailPresenter(MealDetailView view, MealRepository repository , Context context) {
+    public MealDetailPresenter(MealDetailView view, MealRepository repository, Context context) {
         this.view = view;
         this.repository = repository;
+        this.sessionManager = new SessionManager(context);
         this.calendarManager = new CalendarManager(context);
     }
+
 
 
     public void getMealDetails(String mealId) {
@@ -55,6 +59,11 @@ public class MealDetailPresenter {
     }
 
     public void toggleFavorite() {
+        if (!sessionManager.isLoggedIn()) {
+            view.showLoginRequired("Please register or login to add favorites");
+            return;
+        }
+
         if (currentMeal == null) return;
 
         if (isFavorite) {
@@ -93,6 +102,11 @@ public class MealDetailPresenter {
 
     public void handleDateSelected(Calendar selectedDate)
     {
+        if (!sessionManager.isLoggedIn()) {
+            view.showLoginRequired("Please register or login to plan meals");
+            return;
+        }
+
         if (currentMeal == null) {
             view.showError("No meal selected");
             return;
@@ -128,4 +142,5 @@ public class MealDetailPresenter {
             }
         });
     }
+
 }
