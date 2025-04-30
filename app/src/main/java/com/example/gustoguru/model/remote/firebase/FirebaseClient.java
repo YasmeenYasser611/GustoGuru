@@ -26,6 +26,7 @@
  import com.google.firebase.auth.GoogleAuthProvider;
 
  import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
+ import com.google.firebase.auth.UserProfileChangeRequest;
 
  public class FirebaseClient
  {
@@ -193,6 +194,71 @@
                      }
                  });
      }
+
+     public interface OnUpdateCallback {
+         void onSuccess();
+         void onFailure(Exception e);
+     }
+
+     // Add this method to update user name
+     public void updateUserName(String newName, OnUpdateCallback callback) {
+         FirebaseUser user = firebaseAuth.getCurrentUser();
+
+         if (user != null) {
+             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                     .setDisplayName(newName)
+                     .build();
+
+             user.updateProfile(profileUpdates)
+                     .addOnCompleteListener(task -> {
+                         if (task.isSuccessful()) {
+                             callback.onSuccess();
+                         } else {
+                             callback.onFailure(task.getException());
+                         }
+                     });
+         } else {
+             callback.onFailure(new Exception("User not authenticated"));
+         }
+     }
+
+     // Add this method to get user profile data
+     public void getUserProfile(OnAuthCallback callback) {
+         FirebaseUser user = firebaseAuth.getCurrentUser();
+         if (user != null) {
+             callback.onSuccess(user);
+         } else {
+             callback.onFailure(new Exception("User not authenticated"));
+         }
+     }
+
+     // Update registration method to include name
+     public void register(String email, String password, String name, OnAuthCallback callback) {
+         firebaseAuth.createUserWithEmailAndPassword(email, password)
+                 .addOnCompleteListener(task -> {
+                     if (task.isSuccessful()) {
+                         FirebaseUser user = firebaseAuth.getCurrentUser();
+                         if (user != null) {
+                             // Update user profile with name
+                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                     .setDisplayName(name)
+                                     .build();
+
+                             user.updateProfile(profileUpdates)
+                                     .addOnCompleteListener(updateTask -> {
+                                         if (updateTask.isSuccessful()) {
+                                             callback.onSuccess(user);
+                                         } else {
+                                             callback.onFailure(updateTask.getException());
+                                         }
+                                     });
+                         }
+                     } else {
+                         callback.onFailure(task.getException());
+                     }
+                 });
+     }
+
 
 
 }

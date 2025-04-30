@@ -16,15 +16,99 @@ import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
 import com.example.gustoguru.model.repository.MealRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchPresenter {
     private SearchView view;
     private final MealRepository repository;
+    private List<Category> allCategories = new ArrayList<>();
+    private List<Ingredient> allIngredients = new ArrayList<>();
+    private List<Area> allAreas = new ArrayList<>();
 
     public SearchPresenter(SearchView view, MealRepository repository) {
         this.view = view;
         this.repository = repository;
+    }
+
+    public void performSearch(String query) {
+        if (query.isEmpty()) {
+            view.showError("Please enter a search term");
+            return;
+        }
+
+        // Auto-detect search type
+        for (Category c : allCategories) {
+            if (c.getStrCategory().equalsIgnoreCase(query)) {
+                searchByCategory(query);
+                return;
+            }
+        }
+
+        for (Area a : allAreas) {
+            if (a.getStrArea().equalsIgnoreCase(query)) {
+                searchByArea(query);
+                return;
+            }
+        }
+
+        for (Ingredient i : allIngredients) {
+            if (i.getStrIngredient().equalsIgnoreCase(query)) {
+                searchByIngredient(query);
+                return;
+            }
+        }
+
+        // Default to name search
+        searchByName(query);
+    }
+
+    public void filterSuggestions(String query, String method)
+    {
+        if (query.isEmpty()) {
+            view.showSuggestions(Collections.emptyList());
+            return;
+        }
+
+        List<String> filtered = new ArrayList<>();
+        String queryLower = query.toLowerCase();
+
+        switch (method) {
+            case "Category":
+                for (Category c : allCategories) {
+                    if (c.getStrCategory().toLowerCase().contains(queryLower)) {
+                        filtered.add(c.getStrCategory());
+                    }
+                }
+                break;
+            case "Ingredient":
+                for (Ingredient i : allIngredients) {
+                    if (i.getStrIngredient().toLowerCase().contains(queryLower)) {
+                        filtered.add(i.getStrIngredient());
+                    }
+                }
+                break;
+            case "Area":
+                for (Area a : allAreas) {
+                    if (a.getStrArea().toLowerCase().contains(queryLower)) {
+                        filtered.add(a.getStrArea());
+                    }
+                }
+                break;
+        }
+
+        view.showSuggestions(filtered);
+    }
+    public void setCategories(List<Category> categories) {
+        this.allCategories = categories;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.allIngredients = ingredients;
+    }
+
+    public void setAreas(List<Area> areas) {
+        this.allAreas = areas;
     }
 
     public void searchByName(String query) {

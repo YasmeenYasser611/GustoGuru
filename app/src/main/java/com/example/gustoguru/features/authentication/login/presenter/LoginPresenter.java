@@ -1,16 +1,19 @@
 package com.example.gustoguru.features.authentication.login.presenter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginView;
+import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.repository.MealRepository;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
@@ -18,14 +21,17 @@ import java.util.Arrays;
 
 public class LoginPresenter
 {
+    private SessionManager sessionManager;
     private final LoginView view;
     private final MealRepository repository;
     private CallbackManager facebookCallbackManager;
 
-    public LoginPresenter(LoginView view, MealRepository repository)
+    public LoginPresenter(LoginView view, MealRepository repository , Context context)
     {
         this.view = view;
         this.repository = repository;
+        this.sessionManager = new SessionManager(context);
+
     }
 
 
@@ -40,6 +46,11 @@ public class LoginPresenter
         repository.login(email, password, new FirebaseClient.OnAuthCallback() {
             @Override
             public void onSuccess(FirebaseUser user) {
+                sessionManager.createLoginSession(
+                        user.getUid(),
+                        user.getEmail(),
+                        user.getDisplayName() != null ? user.getDisplayName() : ""
+                );
                 view.hideLoading();
                 view.onLoginSuccess();
             }
@@ -59,6 +70,12 @@ public class LoginPresenter
         repository.handleGoogleSignInResult(data, new FirebaseClient.OnAuthCallback() {
             @Override
             public void onSuccess(FirebaseUser user) {
+                // Save user session
+                sessionManager.createLoginSession(
+                        user.getUid(),
+                        user.getEmail(),
+                        user.getDisplayName() != null ? user.getDisplayName() : ""
+                );
                 view.hideLoading();
                 view.onLoginSuccess();
             }
@@ -99,6 +116,12 @@ public class LoginPresenter
         repository.registerFacebookCallback(new FirebaseClient.OnAuthCallback() {
             @Override
             public void onSuccess(FirebaseUser user) {
+                // Save user session
+                sessionManager.createLoginSession(
+                        user.getUid(),
+                        user.getEmail(),
+                        user.getDisplayName() != null ? user.getDisplayName() : ""
+                );
                 view.hideLoading();
                 view.onLoginSuccess();
             }
@@ -163,12 +186,14 @@ public class LoginPresenter
         return isValid;
     }
 
-    private String parseFirebaseError(Exception exception)
-    {
+    private String parseFirebaseError(Exception exception) {
         String errorMessage = exception.getMessage();
         if (errorMessage == null) return "Login failed";
 
-        if (errorMessage.contains("invalid login credentials")) {
+        if (exception instanceof FirebaseAuthUserCollisionException) {
+            return "This email is already registered with another sign-in method. " +
+                    "Please sign in using that method first to link accounts.";
+        } else if (errorMessage.contains("invalid login credentials")) {
             return "Invalid email or password";
         } else if (errorMessage.contains("network error")) {
             return "Network error - please check your connection";
@@ -176,5 +201,10 @@ public class LoginPresenter
             return "Too many attempts - try again later";
         }
         return "Login failed - please try again";
+    }
+    public void checkExistingSession() {
+        if (sessionManager.isLoggedIn()) {
+            view.onLoginSuccess();
+        }
     }
 }

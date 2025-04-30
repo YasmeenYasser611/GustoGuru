@@ -195,6 +195,53 @@ public class MealRepository {
         firebaseClient.registerFacebookCallback(callback);
     }
 
+    // Add to MealRepository.java
+    public void getUserProfile(OnProfileDataCallback callback) {
+        firebaseClient.getUserProfile(new FirebaseClient.OnAuthCallback() {
+            @Override
+            public void onSuccess(FirebaseUser user) {
+                callback.onSuccess(
+                        user.getDisplayName() != null ? user.getDisplayName() : "",
+                        user.getEmail() != null ? user.getEmail() : ""
+                );
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    public void updateUserName(String newName, OnUpdateCallback callback) {
+        firebaseClient.updateUserName(newName, new FirebaseClient.OnUpdateCallback() {
+            @Override
+            public void onSuccess() {
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    public void registerWithName(String email, String password, String name, FirebaseClient.OnAuthCallback callback) {
+        firebaseClient.register(email, password, name, callback);
+    }
+
+    // Add to MealRepository.java
+    public interface OnProfileDataCallback {
+        void onSuccess(String name, String email);
+        void onFailure(Exception e);
+    }
+
+    public interface OnUpdateCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
 
 
 }

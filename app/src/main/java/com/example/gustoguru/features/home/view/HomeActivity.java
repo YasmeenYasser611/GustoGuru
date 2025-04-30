@@ -4,9 +4,11 @@ package com.example.gustoguru.features.home.view;
 
 import static android.app.ProgressDialog.show;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +24,9 @@ import com.example.gustoguru.features.favorites.view.FavoritesActivity;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
 import com.example.gustoguru.features.meal.view.MealAdapter;
 import com.example.gustoguru.features.meal.view.MealDetailActivity;
+import com.example.gustoguru.features.profile.view.ProfileActivity;
 import com.example.gustoguru.features.search.view.SearchActivity;
+import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedActivity;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
@@ -47,29 +51,35 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
     private MealAdapter mealsAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Initialize views
+        initializeViews();
+        setupAdapters();
+        setupRecyclerViews();
+        initializePresenter();
+        loadData();
+        setupBottomNavigation();
+    }
+
+    private void initializeViews() {
         ivMealOfTheDay = findViewById(R.id.ivMealOfTheDay);
         tvMealOfTheDayName = findViewById(R.id.tvMealOfTheDayName);
         categoriesContainer = findViewById(R.id.categoriesContainer);
         mealsByCategoryContainer = findViewById(R.id.mealsByCategoryContainer);
         tvMealsByCategoryTitle = findViewById(R.id.tvMealsByCategoryTitle);
+    }
 
-        // Initialize adapters
+    private void setupAdapters() {
         categoryAdapter = new CategoryAdapter(this, new ArrayList<>(), this);
         mealsAdapter = new MealAdapter(this, new ArrayList<>(),
-                meal -> {
-                    Intent intent = new Intent(this, MealDetailActivity.class);
-                    intent.putExtra("MEAL_ID", meal.getIdMeal());
-                    startActivity(intent);
-                },
-                null
-        );
+                meal -> navigateToMealDetail(meal.getIdMeal()),
+                null);
+    }
 
-        // Setup RecyclerViews
+    private void setupRecyclerViews() {
         categoriesContainer.setHasFixedSize(true);
         categoriesContainer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         categoriesContainer.setAdapter(categoryAdapter);
@@ -77,8 +87,9 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
         mealsByCategoryContainer.setHasFixedSize(true);
         mealsByCategoryContainer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mealsByCategoryContainer.setAdapter(mealsAdapter);
+    }
 
-        // Initialize presenter
+    private void initializePresenter() {
         presenter = new HomePresenter(this,
                 MealRepository.getInstance(
                         AppDatabase.getInstance(this).favoriteMealDao(),
@@ -88,31 +99,30 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
                 ),
                 this
         );
+    }
 
-        // Load data
+    private void loadData() {
         presenter.getRandomMeal();
         presenter.getAllCategories();
+    }
 
-        // Bottom navigation setup
+    private void setupBottomNavigation() {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_fav) {
+            int id = item.getItemId();
+            if (id == R.id.nav_fav) {
                 navigateToFavorites();
                 return true;
-            }
-            else if (item.getItemId() == R.id.nav_planner) {
+            } else if (id == R.id.nav_planner) {
                 navigateToPlannedMeals();
                 return true;
-            }
-            else if (item.getItemId() == R.id.nav_profile) {
-                navigateToLogin();
+            } else if (id == R.id.nav_profile) {
+                checkLoginAndNavigateToProfile();
                 return true;
-            }
-            else if (item.getItemId() == R.id.nav_search) {
+            } else if (id == R.id.nav_search) {
                 navigateToSearch();
                 return true;
-            }
-            else if (item.getItemId() == R.id.nav_home) {
+            } else if (id == R.id.nav_home) {
                 navigateToHome();
                 return true;
             }
@@ -120,16 +130,42 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
         });
     }
 
+    private void checkLoginAndNavigateToProfile() {
+        SessionManager sessionManager = new SessionManager(this);
+        if (sessionManager.isLoggedIn()) {
+            startActivity(new Intent(this, ProfileActivity.class));
+        } else {
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+    }
+    private void showProfileScreen(SessionManager sessionManager) {
+        // Inflate profile layout
+        View profileView = getLayoutInflater().inflate(R.layout.profile_screen, null);
+
+        // Set user details
+        TextView userEmail = profileView.findViewById(R.id.user_email);
+        userEmail.setText(sessionManager.getUserEmail());
+
+        // Setup logout button
+        Button logoutButton = profileView.findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(v -> {
+            sessionManager.logoutUser();
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+            recreate(); // Refresh the activity to update UI
+        });
+
+        // Show in a dialog (or you can replace a fragment)
+        new AlertDialog.Builder(this)
+                .setView(profileView)
+                .setCancelable(true)
+                .show();
+    }
+
     @Override
     public void onCategoryClick(Category category) {
-        // Show the meals section
         tvMealsByCategoryTitle.setVisibility(View.VISIBLE);
         mealsByCategoryContainer.setVisibility(View.VISIBLE);
-
-        // Update the title with category name
         tvMealsByCategoryTitle.setText("Meals in " + category.getStrCategory());
-
-        // Fetch meals for this category
         presenter.searchByCategory(category.getStrCategory());
     }
 
@@ -146,13 +182,9 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
                 .centerCrop()
                 .into(ivMealOfTheDay);
 
-        findViewById(R.id.mealOfTheDayCard).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MealDetailActivity.class);
-            intent.putExtra("MEAL_ID", meal.getIdMeal());
-            startActivity(intent);
-        });
+        findViewById(R.id.mealOfTheDayCard).setOnClickListener(v ->
+                navigateToMealDetail(meal.getIdMeal()));
     }
-
 
     @Override
     public void showSearchResults(List<FilteredMeal> meals) {
@@ -160,7 +192,6 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
             showError("No meals found in this category");
             mealsAdapter.updateMeals(new ArrayList<>());
         } else {
-            // Convert FilteredMeal to Meal objects
             List<Meal> mealList = new ArrayList<>();
             for (FilteredMeal filteredMeal : meals) {
                 Meal meal = new Meal();
@@ -179,16 +210,12 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
     }
 
 
-    public void showLoading() {
-        // Implement if needed
+    private void navigateToMealDetail(String mealId) {
+        Intent intent = new Intent(this, MealDetailActivity.class);
+        intent.putExtra("MEAL_ID", mealId);
+        startActivity(intent);
     }
 
-
-    public void hideLoading() {
-        // Implement if needed
-    }
-
-    // Navigation methods
     private void navigateToSearch() {
         startActivity(new Intent(this, SearchActivity.class));
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -212,6 +239,12 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
     private void navigateToLogin() {
         startActivity(new Intent(this, LoginActivity.class));
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }
 
