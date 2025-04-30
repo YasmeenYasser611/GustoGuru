@@ -49,22 +49,57 @@ public class HomeActivity extends AppCompatActivity implements HomeView, Categor
     private RecyclerView mealsByCategoryContainer;
     private TextView tvMealsByCategoryTitle;
     private MealAdapter mealsAdapter;
+    private TextView tvGreeting;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        sessionManager = new SessionManager(this);
+
 
         initializeViews();
         setupAdapters();
         setupRecyclerViews();
         initializePresenter();
+        setupPersonalizedGreeting();
         loadData();
         setupBottomNavigation();
     }
 
+    private void setupPersonalizedGreeting() {
+        String userName = sessionManager.getUserName();
+        String greetingText;
+
+        if (sessionManager.isLoggedIn())
+        {
+            if (!userName.isEmpty())
+            {
+
+                greetingText = String.format("Hey chef %s 👩‍🍳", userName);
+            } else {
+                greetingText = "Hey Chef! 👩‍🍳";
+            }
+        }
+        else
+        {
+            greetingText = "Hey Guest Chef! 👨‍🍳";
+        }
+
+        tvGreeting.setText(greetingText);
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupPersonalizedGreeting(); // Refresh when returning to activity
+    }
     private void initializeViews() {
+        tvGreeting = findViewById(R.id.tvGreeting);
         ivMealOfTheDay = findViewById(R.id.ivMealOfTheDay);
         tvMealOfTheDayName = findViewById(R.id.tvMealOfTheDayName);
         categoriesContainer = findViewById(R.id.categoriesContainer);
