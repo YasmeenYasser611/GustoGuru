@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FavoritesPresenter {
-    private final FavoritesView view;
+    private FavoritesView view;
     private final MealRepository repository;
 
     private Meal lastRemovedMeal;
@@ -60,4 +60,6 @@ public class FavoritesPresenter {
             lastRemovedPosition = -1;
         }
     }
+
+
 }

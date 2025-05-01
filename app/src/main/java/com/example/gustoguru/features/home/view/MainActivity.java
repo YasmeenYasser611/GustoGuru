@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.gustoguru.R;
 //import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
-import com.example.gustoguru.features.favorites.view.FavoritesActivity;
+import com.example.gustoguru.features.favorites.view.FavoritesFragment;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.profile.view.ProfileActivity;
 import com.example.gustoguru.features.search.view.SearchActivity;
@@ -69,8 +69,9 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
     @Override
     public void navigateToFavorites() {
         if (sessionManager.isLoggedIn()) {
-            startActivity(new Intent(this, FavoritesActivity.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            replaceFragment(new FavoritesFragment(), true);
+        } else {
+            showLoginRequiredDialog("Please login to view favorites");
         }
     }
 
