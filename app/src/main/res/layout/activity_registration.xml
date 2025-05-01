@@ -39,7 +39,7 @@
             android:layout_marginBottom="16dp"
             app:boxStrokeColor="@color/fresh_green"
             app:shapeAppearanceOverlay="@style/RoundedTextInputLayout"
-            app:startIconDrawable="@drawable/ic_person"
+            app:startIconDrawable="@drawable/nav_profile"
             app:hintTextColor="@color/fresh_green"
             android:textColorHint="@color/gray_dark">
 

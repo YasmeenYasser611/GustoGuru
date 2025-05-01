@@ -12,6 +12,7 @@ import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 
 import com.example.gustoguru.features.home.view.HomeActivity;
+import com.example.gustoguru.features.home.view.MainActivity;
 import com.example.gustoguru.features.splashscreen.presenter.SplashPresenter;
 import com.google.firebase.FirebaseApp;
 
@@ -44,7 +45,7 @@ public class SplashActivity extends AppCompatActivity implements Splashview{
     public void navigateToLogin()
     {
         try {
-            startActivity(new Intent(this, HomeActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         } catch (Exception e) {
             showError("Failed to start LoginActivity");

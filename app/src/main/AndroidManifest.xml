@@ -37,6 +37,9 @@
             android:name=".features.home.view.HomeActivity"
             android:exported="false" />
         <activity
+            android:name=".features.home.view.MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".features.authentication.registeration.view.RegistrationActivity"
             android:exported="false" />
         <activity
