@@ -16,7 +16,7 @@ import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.favorites.view.FavoritesFragment;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.profile.view.ProfileActivity;
-import com.example.gustoguru.features.search.view.SearchActivity;
+import com.example.gustoguru.features.search.view.SearchFragment;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
 
@@ -47,9 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
 
     @Override
     public void navigateToSearch() {
-        // Temporary activity launch
-        startActivity(new Intent(this, SearchActivity.class));
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        replaceFragment(new SearchFragment(), true);
     }
 
     @Override

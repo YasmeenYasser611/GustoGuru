@@ -3,6 +3,7 @@ package com.example.gustoguru.features.search.presenter;
 import android.util.Log;
 
 import com.example.gustoguru.features.search.view.SearchView;
+import com.example.gustoguru.features.weekly_planner.view.PlannedView;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
@@ -234,5 +235,14 @@ public class SearchPresenter {
                 view.showError("Failed to load areas: " + message);
             }
         });
+    }
+
+    public void attachView(SearchView view) {
+        this.view = view;
+    }
+
+    public void detachView() {
+        this.view = null;
+
     }
 }

@@ -1,13 +1,11 @@
 package com.example.gustoguru.features.search.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -15,22 +13,22 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gustoguru.R;
-import com.example.gustoguru.features.meal.view.MealDetailActivity;
+import com.example.gustoguru.features.home.view.NavigationCommunicator;
 import com.example.gustoguru.features.search.presenter.SearchPresenter;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.pojo.Area;
@@ -43,11 +41,10 @@ import com.example.gustoguru.model.repository.MealRepository;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity implements SearchView {
+public class SearchFragment extends Fragment implements SearchView {
     // Views
     private RecyclerView searchResultsRecyclerView;
     private ProgressBar progressBar;
@@ -70,13 +67,22 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
     private Animation loadingFadeIn;
     private Animation loadingFadeOut;
 
+    public SearchFragment() {
+        // Required empty public constructor
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         initializeAnimations();
-        initializeViews();
+        initializeViews(view);
         setupRecyclerViews();
         setupSearchBar();
         setupSearchFunctionality();
@@ -85,19 +91,19 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
 
     // Initialization methods
     private void initializeAnimations() {
-        loadingFadeIn = AnimationUtils.loadAnimation(this, R.anim.search_collapse);
-        loadingFadeOut = AnimationUtils.loadAnimation(this, R.anim.search_expand);
+        loadingFadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.search_collapse);
+        loadingFadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.search_expand);
     }
 
-    private void initializeViews() {
-        searchResultsRecyclerView = findViewById(R.id.searchResultsRecyclerView);
-        progressBar = findViewById(R.id.progressBar);
-        searchEditText = findViewById(R.id.searchEditText);
-        searchContainer = findViewById(R.id.searchContainer);
-        btnCloseSearch = findViewById(R.id.btnCloseSearch);
-        searchIcon = findViewById(R.id.searchIcon);
-        suggestionsRecyclerView = findViewById(R.id.suggestionsRecyclerView);
-        searchMethodSpinner = findViewById(R.id.searchMethodSpinner);
+    private void initializeViews(View view) {
+        searchResultsRecyclerView = view.findViewById(R.id.searchResultsRecyclerView);
+        progressBar = view.findViewById(R.id.progressBar);
+        searchEditText = view.findViewById(R.id.searchEditText);
+        searchContainer = view.findViewById(R.id.searchContainer);
+        btnCloseSearch = view.findViewById(R.id.btnCloseSearch);
+        searchIcon = view.findViewById(R.id.searchIcon);
+        suggestionsRecyclerView = view.findViewById(R.id.suggestionsRecyclerView);
+        searchMethodSpinner = view.findViewById(R.id.searchMethodSpinner);
 
         // Set initial state
         btnCloseSearch.setVisibility(View.GONE);
@@ -117,30 +123,30 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
     }
 
     private void setupSearchResultsRecyclerView() {
-        adapter = new SearchAdapter(this, new ArrayList<>(), meal -> {
+        adapter = new SearchAdapter(requireContext(), new ArrayList<>(), meal -> {
             navigateToMealDetail(meal.getIdMeal());
         });
-        searchResultsRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        searchResultsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         searchResultsRecyclerView.setAdapter(adapter);
     }
 
     private void setupSuggestionsRecyclerView() {
         suggestionAdapter = new SuggestionAdapter(this::handleSuggestionClick);
         suggestionsRecyclerView.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         suggestionsRecyclerView.setAdapter(suggestionAdapter);
     }
 
     private void handleSuggestionClick(String suggestion) {
         searchEditText.setText("");
         String method = searchMethodSpinner.getText().toString();
-        presenter.performSearch(suggestion); // Presenter will determine search type
+        presenter.performSearch(suggestion);
     }
 
     private void navigateToMealDetail(String mealId) {
-        Intent intent = new Intent(this, MealDetailActivity.class);
-        intent.putExtra("MEAL_ID", mealId);
-        startActivity(intent);
+        if (getActivity() instanceof NavigationCommunicator) {
+            ((NavigationCommunicator) getActivity()).navigateToMealDetail(mealId);
+        }
     }
 
     // Search functionality
@@ -152,7 +158,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
     private void setupSearchMethodSpinner() {
         String[] searchMethods = {"Name", "Category", "Ingredient", "Area"};
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
-                this,
+                requireContext(),
                 R.layout.dropdown_menu_item,
                 searchMethods
         );
@@ -232,7 +238,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         if (isSearchExpanded) return;
         isSearchExpanded = true;
 
-        Animation expandAnim = AnimationUtils.loadAnimation(this, R.anim.search_expand);
+        Animation expandAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.search_expand);
         searchContainer.startAnimation(expandAnim);
 
         btnCloseSearch.setVisibility(View.VISIBLE);
@@ -250,7 +256,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
         if (!isSearchExpanded) return;
         isSearchExpanded = false;
 
-        Animation collapseAnim = AnimationUtils.loadAnimation(this, R.anim.search_collapse);
+        Animation collapseAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.search_collapse);
         searchContainer.startAnimation(collapseAnim);
 
         btnCloseSearch.setVisibility(View.GONE);
@@ -264,18 +270,18 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
     }
 
     private void showKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
     }
 
     // Presenter initialization
     private void initializePresenter() {
-        AppDatabase db = AppDatabase.getInstance(this);
+        AppDatabase db = AppDatabase.getInstance(requireContext());
         presenter = new SearchPresenter(
                 this,
                 MealRepository.getInstance(
@@ -294,7 +300,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
     // SearchView implementation
     @Override
     public void showLoading() {
-        runOnUiThread(() -> {
+        requireActivity().runOnUiThread(() -> {
             progressBar.startAnimation(loadingFadeIn);
             progressBar.setVisibility(View.VISIBLE);
             searchResultsRecyclerView.startAnimation(loadingFadeOut);
@@ -303,7 +309,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
 
     @Override
     public void hideLoading() {
-        runOnUiThread(() -> {
+        requireActivity().runOnUiThread(() -> {
             progressBar.startAnimation(loadingFadeOut);
             progressBar.setVisibility(View.GONE);
             searchResultsRecyclerView.startAnimation(loadingFadeIn);
@@ -312,7 +318,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
 
     @Override
     public void showSearchResults(List<FilteredMeal> meals) {
-        runOnUiThread(() -> {
+        requireActivity().runOnUiThread(() -> {
             if (meals == null || meals.isEmpty()) {
                 showError("No meals found");
             } else {
@@ -341,20 +347,23 @@ public class SearchActivity extends AppCompatActivity implements SearchView {
 
     @Override
     public void showSuggestions(List<String> suggestions) {
-     suggestionAdapter.updateSuggestions(suggestions);
+        requireActivity().runOnUiThread(() -> {
+            suggestionAdapter.updateSuggestions(suggestions);
+        });
     }
 
     @Override
     public void showError(String message) {
-         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        requireActivity().runOnUiThread(() -> {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override
-    public void onBackPressed() {
-        if (isSearchExpanded) {
-            searchEditText.clearFocus();
-        } else {
-            super.onBackPressed();
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter != null) {
+            presenter.detachView();
         }
     }
 }
