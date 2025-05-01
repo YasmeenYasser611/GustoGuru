@@ -41,6 +41,17 @@
 
 
     <color name="deep_purple">#6A1B9A</color>
+    <color name="pastel_purple">#D8B7DD</color>
+    <color name="fun_text_hint">#80FFFFFF</color>
+    <color name="fun_text_color">#FF333333</color>
+    <color name="fun_chip_color_light">#33FF9800</color> <!-- 20% opacity of your chip color -->
 
+
+
+    <color name="primary_text_color">#212121</color> <!-- Dark Text -->
+
+    <!-- Secondary Colors -->
+    <color name="secondary_color">#F9C9B6</color> <!-- Light Peach -->
+    <color name="secondary_text_color">#757575</color> <!-- Gray Text -->
 
 </resources>
