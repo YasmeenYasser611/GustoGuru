@@ -3,6 +3,7 @@ package com.example.gustoguru.features.favorites.presenter;
 import androidx.lifecycle.Observer;
 
 import com.example.gustoguru.features.favorites.view.FavoritesView;
+import com.example.gustoguru.features.profile.view.ProfileView;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.repository.MealRepository;
 
@@ -62,4 +63,12 @@ public class FavoritesPresenter {
     }
 
 
+    public void attachView(FavoritesView view) {
+        this.view = view;
+    }
+
+    public void detachView() {
+        this.view = null;
+
+    }
 }

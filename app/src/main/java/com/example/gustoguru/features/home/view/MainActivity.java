@@ -15,7 +15,7 @@ import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.favorites.view.FavoritesFragment;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
-import com.example.gustoguru.features.profile.view.ProfileActivity;
+import com.example.gustoguru.features.profile.view.ProfileFragment;
 import com.example.gustoguru.features.search.view.SearchFragment;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
     @Override
     public void navigateToProfile() {
         if (sessionManager.isLoggedIn()) {
-            startActivity(new Intent(this, ProfileActivity.class));
+            replaceFragment(new ProfileFragment(), true);
         } else {
             navigateToLogin();
         }

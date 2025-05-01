@@ -2,11 +2,12 @@ package com.example.gustoguru.features.profile.presenter;
 
 import com.example.gustoguru.features.profile.view.ProfileView;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.features.weekly_planner.view.PlannedView;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.repository.MealRepository;
 
 public class ProfilePresenter  {
-    private final ProfileView view;
+    private ProfileView view;
     private final MealRepository repository;
     private final SessionManager sessionManager;
 
@@ -66,5 +67,14 @@ public class ProfilePresenter  {
         repository.logout();
         sessionManager.logoutUser();
         view.navigateToLogin();
+    }
+
+    public void attachView(ProfileView view) {
+        this.view = view;
+    }
+
+    public void detachView() {
+        this.view = null;
+
     }
 }
