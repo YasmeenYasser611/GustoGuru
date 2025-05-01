@@ -18,7 +18,7 @@ import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.profile.view.ProfileActivity;
 import com.example.gustoguru.features.search.view.SearchActivity;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
-import com.example.gustoguru.features.weekly_planner.view.PlannedActivity;
+import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationCommunicator, HomeCommunicator{
     private static final String TAG = "MainActivity";
@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
     @Override
     public void navigateToPlannedMeals() {
         if (sessionManager.isLoggedIn()) {
-            startActivity(new Intent(this, PlannedActivity.class));
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            replaceFragment(new PlannedFragment(), true);
+        } else {
+            showLoginRequiredDialog("Please login to view planned meals");
         }
     }
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlannedPresenter {
-    private final PlannedView view;
+    private PlannedView view;
     private final MealRepository repository;
 
     private Meal lastRemovedMeal;
@@ -54,5 +54,13 @@ public class PlannedPresenter {
             lastRemovedMeal = null;
             lastRemovedPosition = -1;
         }
+    }
+    public void attachView(PlannedView view) {
+        this.view = view;
+    }
+
+    public void detachView() {
+        this.view = null;
+
     }
 }
