@@ -4,34 +4,22 @@ package com.example.gustoguru.features.authentication.login.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.presenter.LoginPresenter;
 import com.example.gustoguru.features.authentication.registeration.view.RegistrationActivity;
-import com.example.gustoguru.features.home.view.HomeActivity;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.repository.MealRepository;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.security.MessageDigest;
 
 
 public class LoginActivity extends AppCompatActivity implements LoginView
@@ -157,7 +145,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView
         navigateToHome();
     }
     private void navigateToHome() {
-        startActivity(new Intent(this, HomeActivity.class));
+//        startActivity(new Intent(this, HomeActivity.class));
         finish();  // Finish the login activity so user can't go back
     }
 

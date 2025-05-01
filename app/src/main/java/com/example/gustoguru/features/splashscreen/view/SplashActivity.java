@@ -11,7 +11,6 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 
-import com.example.gustoguru.features.home.view.HomeActivity;
 import com.example.gustoguru.features.home.view.MainActivity;
 import com.example.gustoguru.features.splashscreen.presenter.SplashPresenter;
 import com.google.firebase.FirebaseApp;

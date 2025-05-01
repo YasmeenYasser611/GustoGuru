@@ -13,14 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
-import com.example.gustoguru.features.home.view.HomeActivity;
 import com.example.gustoguru.features.profile.presenter.ProfilePresenter;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.repository.MealRepository;
-import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends AppCompatActivity implements ProfileView {
     private ProfilePresenter presenter;

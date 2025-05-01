@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
 import com.example.gustoguru.features.meal.view.MealAdapter;
+import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.pojo.Category;
@@ -150,14 +151,20 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
 
     @Override
     public void showMealOfTheDay(Meal meal) {
-        tvMealOfTheDayName.setText(meal.getStrMeal());
-        Glide.with(this)
-                .load(meal.getStrMealThumb())
-                .centerCrop()
-                .into(ivMealOfTheDay);
+        requireActivity().runOnUiThread(() -> {
+            tvMealOfTheDayName.setText(meal.getStrMeal());
+            Glide.with(requireContext())
+                    .load(meal.getStrMealThumb())
+                    .centerCrop()
+                    .into(ivMealOfTheDay);
 
-        requireView().findViewById(R.id.mealOfTheDayCard).setOnClickListener(v ->
-                communicator.navigateToMealDetail(meal.getIdMeal()));
+            requireView().findViewById(R.id.mealOfTheDayCard).setOnClickListener(v -> {
+                // Get the communicator from the host activity
+                if (getActivity() instanceof NavigationCommunicator) {
+                    ((NavigationCommunicator) getActivity()).navigateToMealDetail(meal.getIdMeal());
+                }
+            });
+        });
     }
 
     @Override
@@ -182,6 +189,8 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
     public void showError(String message) {
         Toast.makeText(requireContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
     }
+
+
 
     @Override
     public void onDestroyView() {

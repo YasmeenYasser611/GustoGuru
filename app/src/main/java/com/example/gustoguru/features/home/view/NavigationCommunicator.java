@@ -8,4 +8,5 @@ public interface NavigationCommunicator {
     void navigateToProfile();
     void navigateToLogin();
     void showLoginRequiredDialog(String message);
+    void navigateToMealDetail(String mealId);
 }

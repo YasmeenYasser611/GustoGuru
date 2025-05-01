@@ -14,7 +14,7 @@ import com.example.gustoguru.R;
 //import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.favorites.view.FavoritesActivity;
-import com.example.gustoguru.features.meal.view.MealDetailActivity;
+import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.profile.view.ProfileActivity;
 import com.example.gustoguru.features.search.view.SearchActivity;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
@@ -95,9 +95,21 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
 
     @Override
     public void navigateToMealDetail(String mealId) {
-        Intent intent = new Intent(this, MealDetailActivity.class);
-        intent.putExtra("MEAL_ID", mealId);
-        startActivity(intent);
+        // Use fragment instead of activity
+        MealDetailFragment fragment = MealDetailFragment.newInstance(mealId);
+        replaceFragment(fragment, true);
+
+        // Optional: Add custom transition animation
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in_right,  // enter
+                        R.anim.fade_out,        // exit
+                        R.anim.fade_in,         // popEnter
+                        R.anim.slide_out_right   // popExit
+                )
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

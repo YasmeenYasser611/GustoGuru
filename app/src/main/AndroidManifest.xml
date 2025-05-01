@@ -33,9 +33,7 @@
         <activity
             android:name=".features.meal.view.MealDetailActivity"
             android:exported="false" />
-        <activity
-            android:name=".features.home.view.HomeActivity"
-            android:exported="false" />
+
         <activity
             android:name=".features.home.view.MainActivity"
             android:exported="false" />
