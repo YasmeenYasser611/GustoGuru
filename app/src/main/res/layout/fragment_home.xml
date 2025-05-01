@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/soft_peach">
 
     <ScrollView
@@ -10,42 +10,43 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
 
-            <!-- Top Greeting -->
+            <!-- Greeting -->
             <TextView
                 android:id="@+id/tvGreeting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hey Chef! 👩‍🍳"
-                android:textSize="24sp"
-                android:textColor="#444"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
                 android:layout_marginTop="32dp"
-                android:layout_marginStart="24dp"/>
+                android:layout_marginStart="24dp" />
 
-            <!-- Meal of the Day Section -->
+            <!-- Meal of the Day -->
             <TextView
-                android:id="@+id/tvMealOfTheDayTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🌟 Meal of the Day"
-                android:textSize="18sp"
-                android:textColor="#444"
-                android:layout_below="@id/tvGreeting"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
                 android:layout_marginTop="24dp"
-                android:layout_marginStart="24dp"/>
+                android:layout_marginStart="24dp" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/mealOfTheDayCard"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:layout_below="@id/tvMealOfTheDayTitle"
                 android:layout_marginTop="12dp"
                 android:layout_marginHorizontal="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -55,7 +56,7 @@
                         android:id="@+id/ivMealOfTheDay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:scaleType="centerCrop"/>
+                        android:scaleType="centerCrop" />
 
                     <TextView
                         android:id="@+id/tvMealOfTheDayName"
@@ -65,52 +66,130 @@
                         android:background="#80000000"
                         android:textColor="#FFF"
                         android:textSize="20sp"
-                        android:padding="16dp"/>
+                        android:textStyle="bold"
+                        android:padding="16dp" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Categories Title -->
+            <!-- Categories -->
             <TextView
-                android:id="@+id/tvCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Categories 🍱"
-                android:textSize="18sp"
-                android:textColor="#444"
-                android:layout_below="@id/mealOfTheDayCard"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
                 android:layout_marginTop="24dp"
-                android:layout_marginStart="24dp"/>
+                android:layout_marginStart="24dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoriesContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tvCategories"
                 android:layout_marginTop="8dp"
-                android:paddingHorizontal="8dp"/>
+                android:paddingHorizontal="8dp" />
 
-            <!-- Meals by Category Title (initially hidden) -->
+            <!-- Meals by Category -->
             <TextView
                 android:id="@+id/tvMealsByCategoryTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Meals in "
-                android:textSize="18sp"
-                android:textColor="#444"
-                android:layout_below="@id/categoriesContainer"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
                 android:layout_marginTop="24dp"
                 android:layout_marginStart="24dp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
-            <!-- Meals by Category RecyclerView (initially hidden) -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mealsByCategoryContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tvMealsByCategoryTitle"
                 android:layout_marginTop="8dp"
                 android:paddingHorizontal="8dp"
-                android:visibility="gone"/>
-        </RelativeLayout>
+                android:visibility="gone" />
+
+            <!-- Countries -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Countries 🌎"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/areasContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="8dp" />
+
+            <!-- Meals by Country -->
+            <TextView
+                android:id="@+id/tvMealsByAreaTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meals from "
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mealsByAreaContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="8dp"
+                android:visibility="gone" />
+
+            <!-- Ingredients -->
+            <TextView
+                android:id="@+id/tvIngredientsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:text="Popular Ingredients 🧂"
+                android:textColor="@color/deep_purple"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ingredientsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="8dp" />
+
+            <!-- Meals by Ingredient -->
+            <TextView
+                android:id="@+id/tvMealsByIngredientTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meals with "
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mealsByIngredientContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="8dp"
+                android:visibility="gone" />
+        </LinearLayout>
     </ScrollView>
 </RelativeLayout>
+
+

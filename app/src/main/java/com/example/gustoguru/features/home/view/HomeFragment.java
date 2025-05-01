@@ -23,8 +23,10 @@ import com.example.gustoguru.features.meal.view.MealAdapter;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
+import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
+import com.example.gustoguru.model.pojo.Ingredient;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
@@ -33,17 +35,42 @@ import com.example.gustoguru.model.repository.MealRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+public class HomeFragment extends Fragment implements HomeView,
+        CategoryAdapter.OnCategoryClickListener,
+        AreaAdapter.OnAreaClickListener,
+        IngredientAdapter.OnIngredientClickListener {
 
-public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.OnCategoryClickListener {
-    private HomePresenter presenter;
-    private RecyclerView categoriesContainer;
-    private CategoryAdapter categoryAdapter;
-    private TextView tvMealOfTheDayName;
+    // Views
+    private TextView tvGreeting;
     private ImageView ivMealOfTheDay;
+    private TextView tvMealOfTheDayName;
+
+    // Categories section
+    private RecyclerView categoriesContainer;
     private RecyclerView mealsByCategoryContainer;
     private TextView tvMealsByCategoryTitle;
-    private MealAdapter mealsAdapter;
-    private TextView tvGreeting;
+
+    // Areas section
+    private RecyclerView areasContainer;
+    private RecyclerView mealsByAreaContainer;
+    private TextView tvMealsByAreaTitle;
+
+    // Ingredients section
+    private RecyclerView ingredientsContainer;
+    private RecyclerView mealsByIngredientContainer;
+    private TextView tvIngredientsTitle;
+    private TextView tvMealsByIngredientTitle;
+
+    // Adapters
+    private CategoryAdapter categoryAdapter;
+    private MealAdapter mealsByCategoryAdapter;
+    private AreaAdapter areaAdapter;
+    private MealAdapter mealsByAreaAdapter;
+    private IngredientAdapter ingredientAdapter;
+    private MealAdapter mealsByIngredientAdapter;
+
+    // Presenter and dependencies
+    private HomePresenter presenter;
     private SessionManager sessionManager;
     private HomeCommunicator communicator;
 
@@ -67,7 +94,6 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         initializeViews(view);
         setupAdapters();
         setupRecyclerViews();
@@ -76,47 +102,72 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
         loadData();
     }
 
-    private void setupPersonalizedGreeting() {
-        String userName = sessionManager.getUserName();
-        String greetingText;
-
-        if (sessionManager.isLoggedIn()) {
-            greetingText = !userName.isEmpty()
-                    ? String.format("Hey chef %s 👩‍🍳", userName)
-                    : "Hey Chef! 👩‍🍳";
-        } else {
-            greetingText = "Hey Guest Chef! 👨‍🍳";
-        }
-
-        tvGreeting.setText(greetingText);
-    }
-
     private void initializeViews(View view) {
         tvGreeting = view.findViewById(R.id.tvGreeting);
         ivMealOfTheDay = view.findViewById(R.id.ivMealOfTheDay);
         tvMealOfTheDayName = view.findViewById(R.id.tvMealOfTheDayName);
+
+        // Categories section
         categoriesContainer = view.findViewById(R.id.categoriesContainer);
         mealsByCategoryContainer = view.findViewById(R.id.mealsByCategoryContainer);
         tvMealsByCategoryTitle = view.findViewById(R.id.tvMealsByCategoryTitle);
+
+        // Areas section
+        areasContainer = view.findViewById(R.id.areasContainer);
+        mealsByAreaContainer = view.findViewById(R.id.mealsByAreaContainer);
+        tvMealsByAreaTitle = view.findViewById(R.id.tvMealsByAreaTitle);
+
+        // Ingredients section
+        ingredientsContainer = view.findViewById(R.id.ingredientsContainer);
+        mealsByIngredientContainer = view.findViewById(R.id.mealsByIngredientContainer);
+        tvIngredientsTitle = view.findViewById(R.id.tvIngredientsTitle);
+        tvMealsByIngredientTitle = view.findViewById(R.id.tvMealsByIngredientTitle);
     }
 
     private void setupAdapters() {
+        // Category adapters
         categoryAdapter = new CategoryAdapter(requireContext(), new ArrayList<>(), this);
-        mealsAdapter = new MealAdapter(requireContext(), new ArrayList<>(),
-                meal -> communicator.navigateToMealDetail(meal.getIdMeal()),
-                null);
+        mealsByCategoryAdapter = new MealAdapter(requireContext(), new ArrayList<>(),
+                meal -> communicator.navigateToMealDetail(meal.getIdMeal()), null);
+
+        // Area adapters
+        areaAdapter = new AreaAdapter(requireContext(), new ArrayList<>(), this);
+        mealsByAreaAdapter = new MealAdapter(requireContext(), new ArrayList<>(),
+                meal -> communicator.navigateToMealDetail(meal.getIdMeal()), null);
+
+        // Ingredient adapters
+        ingredientAdapter = new IngredientAdapter(requireContext(), new ArrayList<>(), this);
+        mealsByIngredientAdapter = new MealAdapter(requireContext(), new ArrayList<>(),
+                meal -> communicator.navigateToMealDetail(meal.getIdMeal()), null);
     }
 
     private void setupRecyclerViews() {
-        categoriesContainer.setHasFixedSize(true);
+        // Categories setup
         categoriesContainer.setLayoutManager(new LinearLayoutManager(
                 requireContext(), LinearLayoutManager.HORIZONTAL, false));
         categoriesContainer.setAdapter(categoryAdapter);
 
-        mealsByCategoryContainer.setHasFixedSize(true);
         mealsByCategoryContainer.setLayoutManager(new LinearLayoutManager(
                 requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        mealsByCategoryContainer.setAdapter(mealsAdapter);
+        mealsByCategoryContainer.setAdapter(mealsByCategoryAdapter);
+
+        // Areas setup
+        areasContainer.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        areasContainer.setAdapter(areaAdapter);
+
+        mealsByAreaContainer.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        mealsByAreaContainer.setAdapter(mealsByAreaAdapter);
+
+        // Ingredients setup
+        ingredientsContainer.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        ingredientsContainer.setAdapter(ingredientAdapter);
+
+        mealsByIngredientContainer.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        mealsByIngredientContainer.setAdapter(mealsByIngredientAdapter);
     }
 
     private void initializePresenter() {
@@ -131,13 +182,25 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
         );
     }
 
+    private void setupPersonalizedGreeting() {
+        String userName = sessionManager.getUserName();
+        String greetingText = sessionManager.isLoggedIn()
+                ? (!userName.isEmpty() ? String.format("Hey chef %s 👩‍🍳", userName) : "Hey Chef! 👩‍🍳")
+                : "Hey Guest Chef! 👨‍🍳";
+        tvGreeting.setText(greetingText);
+    }
+
     private void loadData() {
         presenter.getRandomMeal();
         presenter.getAllCategories();
+        presenter.getAllAreas();
+        presenter.getPopularIngredients();
     }
 
+    // Click handlers
     @Override
     public void onCategoryClick(Category category) {
+        hideAllMealSections();
         tvMealsByCategoryTitle.setVisibility(View.VISIBLE);
         mealsByCategoryContainer.setVisibility(View.VISIBLE);
         tvMealsByCategoryTitle.setText("Meals in " + category.getStrCategory());
@@ -145,10 +208,33 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
     }
 
     @Override
-    public void showCategories(List<Category> categories) {
-        categoryAdapter.setCategories(categories);
+    public void onAreaClick(Area area) {
+        hideAllMealSections();
+        tvMealsByAreaTitle.setVisibility(View.VISIBLE);
+        mealsByAreaContainer.setVisibility(View.VISIBLE);
+        tvMealsByAreaTitle.setText("Meals from " + area.getStrArea());
+        presenter.searchByArea(area.getStrArea());
     }
 
+    @Override
+    public void onIngredientClick(Ingredient ingredient) {
+        hideAllMealSections();
+        tvMealsByIngredientTitle.setVisibility(View.VISIBLE);
+        mealsByIngredientContainer.setVisibility(View.VISIBLE);
+        tvMealsByIngredientTitle.setText("Meals with " + ingredient.getStrIngredient());
+        presenter.searchByIngredient(ingredient.getStrIngredient());
+    }
+
+    private void hideAllMealSections() {
+        tvMealsByCategoryTitle.setVisibility(View.GONE);
+        mealsByCategoryContainer.setVisibility(View.GONE);
+        tvMealsByAreaTitle.setVisibility(View.GONE);
+        mealsByAreaContainer.setVisibility(View.GONE);
+        tvMealsByIngredientTitle.setVisibility(View.GONE);
+        mealsByIngredientContainer.setVisibility(View.GONE);
+    }
+
+    // View interface implementations
     @Override
     public void showMealOfTheDay(Meal meal) {
         requireActivity().runOnUiThread(() -> {
@@ -159,7 +245,6 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
                     .into(ivMealOfTheDay);
 
             requireView().findViewById(R.id.mealOfTheDayCard).setOnClickListener(v -> {
-                // Get the communicator from the host activity
                 if (getActivity() instanceof NavigationCommunicator) {
                     ((NavigationCommunicator) getActivity()).navigateToMealDetail(meal.getIdMeal());
                 }
@@ -169,28 +254,72 @@ public class HomeFragment extends Fragment implements HomeView, CategoryAdapter.
 
     @Override
     public void showSearchResults(List<FilteredMeal> meals) {
+
+    }
+
+    @Override
+    public void showCategories(List<Category> categories) {
+        categoryAdapter.setCategories(categories);
+    }
+
+    @Override
+    public void showAreas(List<Area> areas) {
+        areaAdapter.setAreas(areas);
+    }
+
+    @Override
+    public void showIngredients(List<Ingredient> ingredients) {
+        ingredientAdapter.setIngredients(ingredients);
+    }
+
+
+    @Override
+    public void showMealsByCategory(List<FilteredMeal> meals) {
         if (meals == null || meals.isEmpty()) {
+            hideAllMealSections();
             showError("No meals found in this category");
-            mealsAdapter.updateMeals(new ArrayList<>());
         } else {
-            List<Meal> mealList = new ArrayList<>();
-            for (FilteredMeal filteredMeal : meals) {
-                Meal meal = new Meal();
-                meal.setIdMeal(filteredMeal.getIdMeal());
-                meal.setStrMeal(filteredMeal.getStrMeal());
-                meal.setStrMealThumb(filteredMeal.getStrMealThumb());
-                mealList.add(meal);
-            }
-            mealsAdapter.updateMeals(mealList);
+            updateMealsAdapter(meals, mealsByCategoryAdapter);
         }
     }
 
     @Override
-    public void showError(String message) {
-        Toast.makeText(requireContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
+
+    public void showMealsByArea(List<FilteredMeal> meals) {
+        if (meals == null || meals.isEmpty()) {
+            hideAllMealSections();
+            showError("No meals found from this country");
+        } else {
+            updateMealsAdapter(meals, mealsByAreaAdapter);
+        }
     }
 
+    @Override
+    public void showMealsByIngredient(List<FilteredMeal> meals) {
+        if (meals == null || meals.isEmpty()) {
+            hideAllMealSections();
+            showError("No meals found with this ingredient");
+        } else {
+            updateMealsAdapter(meals, mealsByIngredientAdapter);
+        }
+    }
 
+    private void updateMealsAdapter(List<FilteredMeal> filteredMeals, MealAdapter adapter) {
+        List<Meal> meals = new ArrayList<>();
+        for (FilteredMeal filteredMeal : filteredMeals) {
+            Meal meal = new Meal();
+            meal.setIdMeal(filteredMeal.getIdMeal());
+            meal.setStrMeal(filteredMeal.getStrMeal());
+            meal.setStrMealThumb(filteredMeal.getStrMealThumb());
+            meals.add(meal);
+        }
+        adapter.updateMeals(meals);
+    }
+
+    @Override
+    public void showError(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onDestroyView() {

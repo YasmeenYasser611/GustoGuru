@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
+import com.example.gustoguru.features.home.view.CountryFlagUtils;
 import com.example.gustoguru.features.meal.presenter.MealDetailPresenter;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
@@ -41,7 +42,9 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +62,8 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
     private YouTubePlayerView youtubePlayerView;
     private RecyclerView rvIngredients;
     private String mealId;
+    private RecyclerView rvCountry;
+    private CountryAdapter countryAdapter;
 
     public MealDetailFragment() {
         // Required empty public constructor
@@ -88,10 +93,14 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         btnFavorite = view.findViewById(R.id.btnFavorite);
         tvMealName = view.findViewById(R.id.tvMealName);
         tvCategory = view.findViewById(R.id.tvCategory);
-        tvArea = view.findViewById(R.id.tvArea);
         tvInstructions = view.findViewById(R.id.tvInstructions);
         youtubePlayerView = view.findViewById(R.id.youtubePlayerView);
         rvIngredients = view.findViewById(R.id.rvIngredients);
+        rvCountry = view.findViewById(R.id.rvCountry);
+        rvCountry.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        countryAdapter = new CountryAdapter(requireContext(), new ArrayList<>());
+        rvCountry.setAdapter(countryAdapter);
 
         // Setup RecyclerView
         setupRecyclerView();
@@ -192,12 +201,25 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         requireActivity().runOnUiThread(() -> {
             tvMealName.setText(meal.getStrMeal());
             tvCategory.setText(meal.getStrCategory());
-            tvArea.setText(meal.getStrArea());
             tvInstructions.setText(meal.getStrInstructions());
 
             Glide.with(requireContext())
                     .load(meal.getStrMealThumb())
                     .into(ivMeal);
+
+            // Update country RecyclerView
+            if (meal.getStrArea() != null && !meal.getStrArea().isEmpty()) {
+                List<CountryAdapter.CountryItem> countries = new ArrayList<>();
+                countries.add(new CountryAdapter.CountryItem(
+                        meal.getStrArea(),
+                        CountryFlagUtils.getFlagUrl(meal.getStrArea())
+                ));
+                countryAdapter = new CountryAdapter(requireContext(), countries);
+                rvCountry.setAdapter(countryAdapter);
+                rvCountry.setVisibility(View.VISIBLE);
+            } else {
+                rvCountry.setVisibility(View.GONE);
+            }
 
             updateFavoriteButton(meal.isFavorite());
         });
