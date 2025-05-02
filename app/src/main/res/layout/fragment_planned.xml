@@ -1,28 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/soft_peach">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_planned"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="8dp"/>
+        android:fillViewport="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp"> <!-- Reduced padding since FAB is gone -->
+
+            <!-- Greeting -->
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hey Chef! 👩‍🍳"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="24dp" />
+
+            <!-- Calendar Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📅 Meal Planner"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/deep_purple"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp" />
+
+            <!-- Calendar View -->
+            <com.applandeo.materialcalendarview.CalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="16dp"
+                app:headerColor="@color/deep_purple"
+                app:headerLabelColor="@android:color/white"
+                app:selectionColor="@color/light_purple"
+                app:todayLabelColor="@color/deep_purple"
+                app:daysLabelsColor="@color/deep_purple"
+                app:anotherMonthsDaysLabelsColor="@color/gray"/>
+
+            <!-- Selected Date Header -->
+            <TextView
+                android:id="@+id/tvSelectedDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="24dp"
+                android:text="Today's Meals"
+                android:textColor="@color/deep_purple"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+            <!-- Daily Meals List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_daily_meals"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginHorizontal="16dp"
+                android:clipToPadding="false"
+                android:padding="4dp"/>
+
+            <!-- Empty State -->
+            <TextView
+                android:id="@+id/tv_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="No meals planned for this day"
+                android:textColor="@color/gray"
+                android:textSize="16sp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Loading Indicator -->
     <ProgressBar
         android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/tv_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/no_planned_meals"
-        android:visibility="gone"/>
+    <!-- FAB REMOVED FROM HERE -->
+
 </RelativeLayout>

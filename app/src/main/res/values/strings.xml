@@ -50,4 +50,6 @@
     <string name="logout">Log out</string>
 
     <string name="skip">Skip</string>
+
+    <string name="remove_meal">Remove meal</string>
 </resources>

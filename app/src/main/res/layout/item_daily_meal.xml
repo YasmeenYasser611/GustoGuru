@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Meal Image -->
+        <ImageView
+            android:id="@+id/iv_meal"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_meal"
+            android:contentDescription="@string/meal_image"
+            app:layout_constraintDimensionRatio="1:1"
+            android:background="@color/light_gray"/>
+
+        <!-- Meal Name -->
+        <TextView
+            android:id="@+id/tv_meal_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/iv_meal"
+            android:layout_toRightOf="@id/iv_meal"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/deep_purple"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Meal Name"/>
+
+        <!-- Meal Time -->
+        <TextView
+            android:id="@+id/tv_meal_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/iv_meal"
+            android:layout_toRightOf="@id/iv_meal"
+            android:layout_below="@id/tv_meal_name"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:text="12:00 PM"/>
+
+        <!-- Remove Button -->
+        <ImageButton
+            android:id="@+id/btn_remove"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_delete"
+            android:tint="@color/deep_purple"
+            android:contentDescription="@string/remove_meal"/>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

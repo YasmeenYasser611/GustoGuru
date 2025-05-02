@@ -163,6 +163,12 @@ public class MealRepository {
         }).start();
     }
 
+    public void removePlannedMeal(Meal meal) {
+        new Thread(() -> {
+            plannedMealDao.deletePlannedMeal(meal.getIdMeal() ,"");
+        }).start();
+    }
+
 
     public LiveData<List<Meal>> getUserPlannedMeals() {
         FirebaseUser user = firebaseClient.getCurrentUser();
