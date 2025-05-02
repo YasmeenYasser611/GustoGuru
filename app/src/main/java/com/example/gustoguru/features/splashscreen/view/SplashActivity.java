@@ -12,39 +12,39 @@ import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 
 import com.example.gustoguru.features.home.view.MainActivity;
+import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.features.splashscreen.presenter.SplashPresenter;
 import com.google.firebase.FirebaseApp;
 
 @SuppressLint("CustomSplashScreen")
-public class SplashActivity extends AppCompatActivity implements Splashview{
+public class SplashActivity extends AppCompatActivity implements Splashview {
     private SplashPresenter presenter;
     private LottieAnimationView animationView;
+    private SessionManager sessionManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
         FirebaseApp.initializeApp(this);
 
         animationView = findViewById(R.id.splashAnimation);
+        sessionManager = new SessionManager(this);
 
         // Initialize presenter
-        presenter = new SplashPresenter(this);
+        presenter = new SplashPresenter(this, sessionManager);
         presenter.initialize();
     }
 
     @Override
-    public LottieAnimationView getAnimationView()
-    {
+    public LottieAnimationView getAnimationView() {
         return animationView;
     }
 
     @Override
-    public void navigateToLogin()
-    {
+    public void navigateToLogin() {
         try {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
         } catch (Exception e) {
             showError("Failed to start LoginActivity");
@@ -52,17 +52,30 @@ public class SplashActivity extends AppCompatActivity implements Splashview{
     }
 
     @Override
-    public void showError(String message)
-    {
-        Log.e("SplashActivity", message);
-        // Fallback navigation
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
+    public void navigateToMain() {
+        try {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } catch (Exception e) {
+            showError("Failed to start MainActivity");
+        }
     }
 
     @Override
-    protected void onDestroy()
-    {
+    public void showError(String message) {
+        Log.e("SplashActivity", message);
+        // Fallback navigation - try to go to MainActivity
+        try {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } catch (Exception e) {
+            // If all else fails, just finish
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
     }

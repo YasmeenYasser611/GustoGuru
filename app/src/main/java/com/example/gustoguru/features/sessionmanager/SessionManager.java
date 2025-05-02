@@ -11,6 +11,7 @@ public class SessionManager {
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_USER_EMAIL = "userEmail";
     private static final String KEY_USER_NAME = "userName";
+    private static final String KEY_IS_GUEST = "isGuest";
 
 
 
@@ -62,7 +63,17 @@ public class SessionManager {
     }
 
     public void logoutUser() {
-        editor.clear();
+        editor.putBoolean(KEY_IS_LOGGED_IN, false);
+        editor.putBoolean(KEY_IS_GUEST, false);
         editor.apply();
+    }
+
+    public void setGuestMode(boolean isGuest) {
+        editor.putBoolean(KEY_IS_GUEST, isGuest);
+        editor.apply();
+    }
+
+    public boolean isGuest() {
+        return pref.getBoolean(KEY_IS_GUEST, false);
     }
 }

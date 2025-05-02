@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView
         initViews();
         initDependencies(); // Remove the duplicate call
         setupClickListeners();
+        setupSkipButton();
 
         presenter.checkExistingSession();
     }
@@ -55,6 +56,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView
     {
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
+    }
+    private void setupSkipButton() {
+        findViewById(R.id.tv_skip).setOnClickListener(v -> {
+            // Mark user as guest
+            navigateToHome();
+        });
     }
 
     private void initDependencies() {
