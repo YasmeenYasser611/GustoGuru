@@ -9,4 +9,6 @@ public interface NavigationCommunicator {
     void navigateToLogin();
     void showLoginRequiredDialog(String message);
     void navigateToMealDetail(String mealId);
+
+
 }

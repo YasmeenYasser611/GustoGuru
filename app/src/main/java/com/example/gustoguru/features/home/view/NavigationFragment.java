@@ -17,9 +17,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import android.util.Log;
 
-public class NavigationFragment extends Fragment {
+public class NavigationFragment extends Fragment
+{
     private NavigationCommunicator communicator;
-    private static final String TAG = "NavigationFragment";
     private BottomNavigationView bottomNav;
 
     @Override
@@ -79,9 +79,14 @@ public class NavigationFragment extends Fragment {
                 communicator.navigateToProfile();
                 return true;
             }
-
             return false;
         });
+    }
+
+    public void updateSelectedItem(int itemId) {
+        if (bottomNav != null && itemId != -1) {
+            bottomNav.setSelectedItemId(itemId);
+        }
     }
 
     @Override

@@ -177,5 +177,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView
         return getString(R.string.default_web_client_id);
     }
 
+    @Override
+    public void onBackPressed() {
+        // Navigate to HomeFragment in MainActivity when back button is pressed
+        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
 
 }

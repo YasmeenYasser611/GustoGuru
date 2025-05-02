@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
     private FragmentManager fragmentManager;
     private SessionManager sessionManager;
 
+    private NavigationFragment navigationFragment;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,14 +38,19 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
         fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            // Add Navigation Fragment (static - always visible)
+            // Add Navigation Fragment
+            navigationFragment = new NavigationFragment();
             fragmentManager.beginTransaction()
-                    .add(R.id.bottom_nav_container, new NavigationFragment(), "NAV_FRAGMENT")
+                    .add(R.id.bottom_nav_container, navigationFragment, "NAV_FRAGMENT")
                     .commit();
 
             // Start with Home Fragment
             replaceFragment(new HomeFragment(), false);
+        } else {
+            // Restore reference to existing navigation fragment
+            navigationFragment = (NavigationFragment) fragmentManager.findFragmentByTag("NAV_FRAGMENT");
         }
+        setupBackStackListener();
     }
 
     @Override
@@ -84,14 +92,6 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
                 .show();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
 
     @Override
     public void navigateToMealDetail(String mealId) {
@@ -168,6 +168,43 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
 
         } catch (Exception e) {
             Log.e(TAG, "Fragment transaction failed", e);
+        }
+    }
+
+    private void setupBackStackListener() {
+        fragmentManager.addOnBackStackChangedListener(() -> {
+            updateBottomNavigation();
+        });
+    }
+
+    private void updateBottomNavigation() {
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
+        if (navigationFragment != null && currentFragment != null) {
+            navigationFragment.updateSelectedItem(getNavigationItemId(currentFragment));
+        }
+    }
+
+    private int getNavigationItemId(Fragment fragment) {
+        if (fragment instanceof HomeFragment) {
+            return R.id.nav_home;
+        } else if (fragment instanceof SearchFragment) {
+            return R.id.nav_search;
+        } else if (fragment instanceof PlannedFragment) {
+            return R.id.nav_planner;
+        } else if (fragment instanceof FavoritesFragment) {
+            return R.id.nav_fav;
+        } else if (fragment instanceof ProfileFragment) {
+            return R.id.nav_profile;
+        }
+        return -1; // No matching item
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
         }
     }
 }
