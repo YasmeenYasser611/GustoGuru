@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="searchResultsRecyclerView" type="id" />
+    <item name="Suggestions" type="id" />
 </resources>

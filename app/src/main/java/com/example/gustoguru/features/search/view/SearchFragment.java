@@ -2,6 +2,7 @@ package com.example.gustoguru.features.search.view;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -18,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,6 +46,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SearchFragment extends Fragment implements SearchView {
     // Views
     private RecyclerView searchResultsRecyclerView;
@@ -54,10 +57,12 @@ public class SearchFragment extends Fragment implements SearchView {
     private ImageView searchIcon;
     private RecyclerView suggestionsRecyclerView;
     private MaterialAutoCompleteTextView searchMethodSpinner;
+    private TextView suggestionsTitle;
 
     // Adapters
     private SearchAdapter adapter;
     private SuggestionAdapter suggestionAdapter;
+
 
     // Presenter
     private SearchPresenter presenter;
@@ -104,6 +109,12 @@ public class SearchFragment extends Fragment implements SearchView {
         searchIcon = view.findViewById(R.id.searchIcon);
         suggestionsRecyclerView = view.findViewById(R.id.suggestionsRecyclerView);
         searchMethodSpinner = view.findViewById(R.id.searchMethodSpinner);
+
+        // Initialize suggestionsTitle safely
+        suggestionsTitle = view.findViewById(R.id.suggestionsTitle);
+        if (suggestionsTitle != null) {
+            suggestionsTitle.setVisibility(View.GONE);
+        }
 
         // Set initial state
         btnCloseSearch.setVisibility(View.GONE);
@@ -248,6 +259,9 @@ public class SearchFragment extends Fragment implements SearchView {
         params.gravity = Gravity.TOP;
         params.topMargin = getResources().getDimensionPixelSize(R.dimen.search_margin_top);
         searchContainer.setLayoutParams(params);
+        if (suggestionAdapter.getItemCount() > 0) {
+            suggestionsTitle.setVisibility(View.VISIBLE);
+        }
 
         showKeyboard();
     }
@@ -265,6 +279,8 @@ public class SearchFragment extends Fragment implements SearchView {
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) searchContainer.getLayoutParams();
         params.topMargin = getResources().getDimensionPixelSize(R.dimen.search_margin_top);
         searchContainer.setLayoutParams(params);
+        suggestionsTitle.setVisibility(View.GONE);
+        suggestionAdapter.updateSuggestions(new ArrayList<>());
 
         hideKeyboard();
     }
@@ -319,6 +335,8 @@ public class SearchFragment extends Fragment implements SearchView {
     @Override
     public void showSearchResults(List<FilteredMeal> meals) {
         requireActivity().runOnUiThread(() -> {
+            suggestionsTitle.setVisibility(View.GONE); // Hide when showing results
+            suggestionsRecyclerView.setVisibility(View.GONE);
             if (meals == null || meals.isEmpty()) {
                 showError("No meals found");
             } else {
@@ -348,6 +366,9 @@ public class SearchFragment extends Fragment implements SearchView {
     @Override
     public void showSuggestions(List<String> suggestions) {
         requireActivity().runOnUiThread(() -> {
+            boolean hasSuggestions = suggestions != null && !suggestions.isEmpty();
+            suggestionsTitle.setVisibility(hasSuggestions ? View.VISIBLE : View.GONE);
+            suggestionsRecyclerView.setVisibility(hasSuggestions ? View.VISIBLE : View.GONE);
             suggestionAdapter.updateSuggestions(suggestions);
         });
     }
