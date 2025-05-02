@@ -1,5 +1,6 @@
 package com.example.gustoguru.model.repository;
 
+import com.example.gustoguru.model.remote.firebase.FirebaseSyncHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -8,8 +9,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.Tag;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.gustoguru.model.local.FavoriteMealDao;
 import com.example.gustoguru.model.local.PlannedMealDao;
@@ -32,6 +35,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MealRepository {
@@ -43,6 +47,7 @@ public class MealRepository {
     private final FirebaseClient firebaseClient;
 
     private static MealRepository instance;
+    private FirebaseSyncHelper syncHelper;
 
 
 
@@ -61,6 +66,10 @@ public class MealRepository {
         this.plannedMealDao = plannedMealDao;
         this.mealClient = mealClient;
         this.firebaseClient = firebaseClient;
+        FirebaseUser user = firebaseClient.getCurrentUser();
+        if (user != null) {
+            syncHelper = new FirebaseSyncHelper(user.getUid());
+        }
     }
 
 
@@ -105,20 +114,33 @@ public class MealRepository {
     public LiveData<List<Meal>> getAllFavorites() {
         return favoriteMealDao.getAllFavorites();
     }
+    public LiveData<List<Meal>> getUserFavorites() {
+        FirebaseUser user = firebaseClient.getCurrentUser();
+        if (user != null) {
+            return favoriteMealDao.getUserFavorites(user.getUid());
+        }
+        return new MutableLiveData<>(Collections.emptyList());
+    }
 
     public void addFavorite(Meal meal) {
         if (meal == null || meal.getIdMeal() == null) return;
 
+        FirebaseUser user = firebaseClient.getCurrentUser();
+        if (user == null) return;
+
         new Thread(() -> {
             meal.setFavorite(true);
-            if (favoriteMealDao.mealExists(meal.getIdMeal()) > 0)
-            {
-                // Meal exists - just update favorite status
-                favoriteMealDao.updateFavoriteStatus(meal.getIdMeal(), true);
-            } else
-            {
-                // Meal doesn't exist - insert new meal with favorite flag
+            meal.setUserId(user.getUid());
+            meal.setLastSyncTimestamp(System.currentTimeMillis());
+
+            if (favoriteMealDao.mealExists(meal.getIdMeal(), user.getUid()) > 0) {
+                favoriteMealDao.updateFavoriteStatus(meal.getIdMeal(), true, user.getUid());
+            } else {
                 favoriteMealDao.insertFavorite(meal);
+            }
+
+            if (syncHelper != null) {
+                syncHelper.syncFavoriteToFirebase(meal);
             }
         }).start();
     }
@@ -126,32 +148,75 @@ public class MealRepository {
     public void removeFavorite(Meal meal) {
         if (meal == null || meal.getIdMeal() == null) return;
 
+        FirebaseUser user = firebaseClient.getCurrentUser();
+        if (user == null) return;
+
         new Thread(() -> {
             meal.setFavorite(false);
-            // Only update if meal exists (don't insert new meal for removal)
-            if (favoriteMealDao.mealExists(meal.getIdMeal()) > 0) {
-                favoriteMealDao.updateFavoriteStatus(meal.getIdMeal(), false);
+            if (favoriteMealDao.mealExists(meal.getIdMeal(), user.getUid()) > 0) {
+                favoriteMealDao.updateFavoriteStatus(meal.getIdMeal(), false, user.getUid());
+            }
+
+            if (syncHelper != null) {
+                syncHelper.removeFavoriteFromFirebase(meal.getIdMeal());
             }
         }).start();
     }
 
-    public LiveData<List<Meal>> getAllPlannedMeals() {
-        return plannedMealDao.getAllPlannedMeals();
+
+    public LiveData<List<Meal>> getUserPlannedMeals() {
+        FirebaseUser user = firebaseClient.getCurrentUser();
+        if (user != null) {
+            return plannedMealDao.getUserPlannedMeals(user.getUid());
+        }
+        return new MutableLiveData<>(Collections.emptyList());
     }
 
-    public void addPlannedMeal(Meal meal, String date)
-    {
-        new Thread(() ->
-        {
+    public void addPlannedMeal(Meal meal, String date) {
+        FirebaseUser user = firebaseClient.getCurrentUser();
+        if (user == null) return;
+
+        new Thread(() -> {
             meal.setPlannedDate(date);
+            meal.setUserId(user.getUid());
+            meal.setLastSyncTimestamp(System.currentTimeMillis());
+
             plannedMealDao.insertPlannedMeal(meal);
+
+            if (syncHelper != null) {
+                syncHelper.syncPlannedMealToFirebase(meal);
+            }
         }).start();
     }
+
+//    public void removePlannedMeal(Meal meal) {
+//        FirebaseUser user = firebaseClient.getCurrentUser();
+//        if (user == null) return;
+//
+//        new Thread(() -> {
+//            plannedMealDao.deletePlannedMeal(meal.getIdMeal(), meal.getPlannedDate(), user.getUid());
+//
+//            if (syncHelper != null) {
+//                syncHelper.removePlannedMealFromFirebase(meal.getIdMeal(), meal.getPlannedDate());
+//            }
+//        }).start();
+//    }
 
     //FireBase Functions
     public void login(String email, String password, FirebaseClient.OnAuthCallback callback)
     {
-        firebaseClient.login(email, password, callback);
+        firebaseClient.login(email, password, new FirebaseClient.OnAuthCallback() {
+            @Override
+            public void onSuccess(FirebaseUser user) {
+                // Initialize sync after successful login
+                initializeSync(user.getUid());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle error
+            }
+        });
     }
 
     public void register(String email, String password, FirebaseClient.OnAuthCallback callback)
@@ -240,6 +305,47 @@ public class MealRepository {
     public interface OnUpdateCallback {
         void onSuccess();
         void onFailure(Exception e);
+    }
+    public void initializeSync(String userId) {
+        this.syncHelper = new FirebaseSyncHelper(userId);
+
+        // Sync favorites
+        syncHelper.downloadUserFavorites(new FirebaseSyncHelper.FirebaseCallback<List<Meal>>() {
+            @Override
+            public void onSuccess(List<Meal> meals) {
+                new Thread(() -> {
+                    for (Meal meal : meals) {
+                        if (favoriteMealDao.mealExists(meal.getIdMeal(), userId) == 0) {
+                            meal.setUserId(userId);
+                            favoriteMealDao.insertFavorite(meal);
+                        }
+                    }
+                }).start();
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("SYNC", "Failed to download favorites", e);
+            }
+        });
+
+        // Sync planned meals
+        syncHelper.downloadUserPlannedMeals(new FirebaseSyncHelper.FirebaseCallback<List<Meal>>() {
+            @Override
+            public void onSuccess(List<Meal> meals) {
+                new Thread(() -> {
+                    for (Meal meal : meals) {
+                        if (plannedMealDao.mealExists(meal.getIdMeal(), meal.getPlannedDate(), userId) == 0) {
+                            meal.setUserId(userId);
+                            plannedMealDao.insertPlannedMeal(meal);
+                        }
+                    }
+                }).start();
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("SYNC", "Failed to download planned meals", e);
+            }
+        });
     }
 
 

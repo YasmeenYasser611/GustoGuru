@@ -33,14 +33,18 @@ android {
 }
 
 dependencies {
+    // Import the Firebase BoM (Bill of Materials)
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+
     // AndroidX and Material
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    // Firebase
-    implementation(libs.firebase.auth)
+    // Firebase dependencies (version managed by BoM)
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
@@ -67,10 +71,8 @@ dependencies {
     // Lottie Animations
     implementation("com.airbnb.android:lottie:6.3.0")
 
-    // YouTube Player (choose ONE of these)
+    // YouTube Player
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.0.0")
-    // OR if you need official YouTube API
-    // implementation("com.google.android.gms:play-services-youtube:18.0.1")
 
     // Glide (image loading)
     implementation("com.github.bumptech.glide:glide:4.16.0")

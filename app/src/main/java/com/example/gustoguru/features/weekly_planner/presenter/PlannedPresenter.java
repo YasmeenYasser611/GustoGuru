@@ -1,5 +1,6 @@
 package com.example.gustoguru.features.weekly_planner.presenter;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.gustoguru.features.weekly_planner.view.PlannedView;
@@ -17,25 +18,42 @@ public class PlannedPresenter {
     private int lastRemovedPosition = -1;
     private List<Meal> currentMeals = new ArrayList<>();
 
+    private LiveData<List<Meal>> plannedMealsLiveData;
+    private Observer<List<Meal>> plannedMealsObserver;
+
     public PlannedPresenter(PlannedView view, MealRepository repository) {
         this.view = view;
         this.repository = repository;
-    }
-
-    public void loadPlannedMeals() {
-        view.showLoading();
-        repository.getAllPlannedMeals().observeForever(new Observer<List<Meal>>() {
+        this.plannedMealsObserver = new Observer<List<Meal>>() {
             @Override
             public void onChanged(List<Meal> meals) {
-                view.hideLoading();
-                currentMeals = meals;
-                if (meals == null || meals.isEmpty()) {
-                    view.showError("No planned meals found");
-                } else {
-                    view.showPlannedMeals(meals);
+                if (view != null) {  // Add null check
+                    view.hideLoading();
+                    if (meals == null || meals.isEmpty()) {
+                        view.showEmptyView();
+                    } else {
+                        view.showPlannedMeals(meals);
+                    }
                 }
             }
-        });
+        };
+    }
+
+
+
+    public void loadPlannedMeals() {
+        if (view != null) {  // Add null check
+            view.showLoading();
+        }
+        plannedMealsLiveData = repository.getUserPlannedMeals();
+        plannedMealsLiveData.observeForever(plannedMealsObserver);
+    }
+
+    public void detachView() {
+        if (plannedMealsLiveData != null && plannedMealsObserver != null) {
+            plannedMealsLiveData.removeObserver(plannedMealsObserver);
+        }
+        view = null;  // Clear reference to prevent leaks
     }
 
     public void removePlannedMeal(Meal meal, int position) {
@@ -59,8 +77,5 @@ public class PlannedPresenter {
         this.view = view;
     }
 
-    public void detachView() {
-        this.view = null;
 
-    }
 }

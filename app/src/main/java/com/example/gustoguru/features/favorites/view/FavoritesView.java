@@ -12,4 +12,6 @@ public interface FavoritesView {
     void showUndoSnackbar(Meal meal);
     void removeMealAt(int position);
     void insertMealAt(Meal meal, int position);
+
+    boolean isActive();
 }

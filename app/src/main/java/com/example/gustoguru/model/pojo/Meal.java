@@ -28,6 +28,26 @@ public class Meal {
     private String strImageSource;
     private String strCreativeCommonsConfirmed;
     private String dateModified;
+    private String userId; // To associate with user
+    private Long lastSyncTimestamp; // For conflict resolution
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String firebaseUserId) {
+        this.userId = firebaseUserId;
+    }
+
+    public Long getLastSyncTimestamp() {
+        return lastSyncTimestamp;
+    }
+
+    public void setLastSyncTimestamp(Long lastSyncTimestamp) {
+        this.lastSyncTimestamp = lastSyncTimestamp;
+    }
+
+
 
 
     @ColumnInfo(name = "isFavorite")

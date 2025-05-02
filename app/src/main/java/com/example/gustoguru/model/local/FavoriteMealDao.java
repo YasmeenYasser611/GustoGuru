@@ -23,14 +23,26 @@ public interface FavoriteMealDao {
     @Query("SELECT * FROM meal WHERE isFavorite = 1")
     LiveData<List<Meal>> getAllFavorites();
 
-    @Query("SELECT isFavorite FROM meal WHERE idMeal = :mealId")
-    boolean isFavorite(String mealId);
+//    @Query("SELECT isFavorite FROM meal WHERE idMeal = :mealId")
+//    boolean isFavorite(String mealId);
 
-    @Query("UPDATE meal SET isFavorite = :isFavorite WHERE idMeal = :mealId")
-    void updateFavoriteStatus(String mealId, boolean isFavorite);
+//    @Query("UPDATE meal SET isFavorite = :isFavorite WHERE idMeal = :mealId")
+//    void updateFavoriteStatus(String mealId, boolean isFavorite);
 
-    @Query("SELECT COUNT(*) FROM meal WHERE idMeal = :mealId")
-    int mealExists(String mealId);
+//    @Query("SELECT COUNT(*) FROM meal WHERE idMeal = :mealId")
+//    int mealExists(String mealId);
+
+    @Query("SELECT * FROM meal WHERE isFavorite = 1 AND userId = :userId")
+    LiveData<List<Meal>> getUserFavorites(String userId);
+
+    @Query("SELECT isFavorite FROM meal WHERE idMeal = :mealId AND userId = :userId")
+    boolean isFavorite(String mealId, String userId);
+
+    @Query("UPDATE meal SET isFavorite = :isFavorite WHERE idMeal = :mealId AND userId = :userId")
+    void updateFavoriteStatus(String mealId, boolean isFavorite, String userId);
+
+    @Query("SELECT COUNT(*) FROM meal WHERE idMeal = :mealId AND userId = :userId")
+    int mealExists(String mealId, String userId);
 
 
 }

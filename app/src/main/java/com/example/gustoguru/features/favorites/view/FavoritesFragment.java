@@ -46,8 +46,22 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter != null) {
+            presenter.detachView();
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return isAdded() && !isDetached() && getActivity() != null;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         progressBar = view.findViewById(R.id.progressBar);
         tvEmpty = view.findViewById(R.id.tv_empty);

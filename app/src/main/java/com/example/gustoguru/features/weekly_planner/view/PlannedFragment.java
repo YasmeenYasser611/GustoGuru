@@ -70,6 +70,9 @@ public class PlannedFragment extends Fragment implements PlannedView {
         presenter.loadPlannedMeals();
     }
 
+
+
+
     private void onMealClick(Meal meal) {
         if (getActivity() instanceof NavigationCommunicator) {
             ((NavigationCommunicator) getActivity()).navigateToMealDetail(meal.getIdMeal());
@@ -145,6 +148,12 @@ public class PlannedFragment extends Fragment implements PlannedView {
             recyclerView.scrollToPosition(position);
             tvEmpty.setVisibility(View.GONE);
         });
+    }
+
+    @Override
+    public void showEmptyView() {
+        Toast.makeText(requireContext(), "Planner is empty", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

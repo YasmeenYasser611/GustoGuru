@@ -4,7 +4,8 @@ import com.example.gustoguru.model.pojo.Meal;
 
 import java.util.List;
 
-public interface PlannedView {
+public interface PlannedView
+{
     void showPlannedMeals(List<Meal> meals);
     void showError(String message);
     void showLoading();
@@ -12,4 +13,5 @@ public interface PlannedView {
     void showUndoSnackbar(Meal meal);
     void removeMealAt(int position);
     void insertMealAt(Meal meal, int position);
+    void showEmptyView();
 }

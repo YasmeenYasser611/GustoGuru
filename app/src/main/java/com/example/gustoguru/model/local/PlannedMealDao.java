@@ -18,4 +18,10 @@ public interface PlannedMealDao {
 
     @Query("SELECT * FROM meal WHERE plannedDate IS NOT NULL")
     LiveData<List<Meal>> getAllPlannedMeals();
+
+    @Query("SELECT * FROM meal WHERE plannedDate IS NOT NULL AND userId = :userId")
+    LiveData<List<Meal>> getUserPlannedMeals(String userId);
+
+    @Query("SELECT COUNT(*) FROM meal WHERE idMeal = :mealId AND plannedDate = :date AND userId = :userId")
+    int mealExists(String mealId, String date, String userId);
 }
