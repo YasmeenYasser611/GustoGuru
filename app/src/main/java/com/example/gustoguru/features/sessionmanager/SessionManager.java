@@ -4,6 +4,13 @@ package com.example.gustoguru.features.sessionmanager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.gustoguru.model.pojo.Meal;
+import com.google.gson.Gson;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 
 public class SessionManager {
     private static final String PREF_NAME = "GustoGuruPref";
@@ -13,6 +20,8 @@ public class SessionManager {
     private static final String KEY_USER_NAME = "userName";
     private static final String KEY_IS_GUEST = "isGuest";
 
+    private static final String KEY_MEAL_OF_THE_DAY = "meal_of_the_day";
+    private static final String KEY_MEAL_DATE = "meal_date";
 
 
 
@@ -75,5 +84,32 @@ public class SessionManager {
 
     public boolean isGuest() {
         return pref.getBoolean(KEY_IS_GUEST, false);
+    }
+
+    public void saveMealOfTheDay(Meal meal) {
+        editor.putString(KEY_MEAL_OF_THE_DAY, new Gson().toJson(meal));
+        editor.putString(KEY_MEAL_DATE, getCurrentDate());
+        editor.apply();
+    }
+
+    public Meal getMealOfTheDay() {
+        String savedDate = pref.getString(KEY_MEAL_DATE, "");
+        String today = getCurrentDate();
+
+        if (savedDate.equals(today)) {
+            String mealJson = pref.getString(KEY_MEAL_OF_THE_DAY, null);
+            if (mealJson != null) {
+                try {
+                    return new Gson().fromJson(mealJson, Meal.class);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getCurrentDate() {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
     }
 }

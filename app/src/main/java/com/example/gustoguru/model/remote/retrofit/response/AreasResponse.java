@@ -5,12 +5,12 @@ import com.example.gustoguru.model.pojo.Area;
 
 import java.util.List;
 
-public class AreasResponse {
+public class AreasResponse
+{
     private List<Area> meals;
 
     public List<Area> getAreas() {
         return meals;
     }
-
 
 }

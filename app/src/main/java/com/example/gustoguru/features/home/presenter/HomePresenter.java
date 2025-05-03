@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.gustoguru.features.home.view.HomeView;
+import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
@@ -26,35 +27,23 @@ import java.util.Locale;
 
 
 public class HomePresenter {
-    private static final String PREF_MEAL_OF_THE_DAY = "meal_of_the_day";
-    private static final String PREF_MEAL_DATE = "meal_date";
 
     private HomeView view;
     private MealRepository repository;
-    private SharedPreferences sharedPreferences;
+    private SessionManager sessionManager;
 
     public HomePresenter(HomeView view, MealRepository repository, Context context) {
         this.view = view;
         this.repository = repository;
-        this.sharedPreferences = context.getSharedPreferences("MealPreferences", Context.MODE_PRIVATE);
+        this.sessionManager = new SessionManager(context);
     }
 
 
     public void getRandomMeal() {
-        String savedDate = sharedPreferences.getString(PREF_MEAL_DATE, "");
-        String today = getCurrentDate();
-
-        if (savedDate.equals(today)) {
-            String mealJson = sharedPreferences.getString(PREF_MEAL_OF_THE_DAY, null);
-            if (mealJson != null) {
-                try {
-                    Meal savedMeal = new Gson().fromJson(mealJson, Meal.class);
-                    view.showMealOfTheDay(savedMeal);
-                    return;
-                } catch (Exception e) {
-                    // Proceed to fetch new meal if parsing fails
-                }
-            }
+        Meal savedMeal = sessionManager.getMealOfTheDay();
+        if (savedMeal != null) {
+            view.showMealOfTheDay(savedMeal);
+            return;
         }
         fetchNewRandomMeal();
     }
@@ -66,11 +55,7 @@ public class HomePresenter {
                 if (meals != null && !meals.isEmpty()) {
                     Meal todaysMeal = meals.get(0);
                     view.showMealOfTheDay(todaysMeal);
-
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(PREF_MEAL_OF_THE_DAY, new Gson().toJson(todaysMeal));
-                    editor.putString(PREF_MEAL_DATE, getCurrentDate());
-                    editor.apply();
+                    sessionManager.saveMealOfTheDay(todaysMeal);
                 } else {
                     view.showError("No meal found");
                 }
