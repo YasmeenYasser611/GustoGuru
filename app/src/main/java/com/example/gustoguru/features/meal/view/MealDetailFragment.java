@@ -29,7 +29,7 @@ import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.home.view.utils.CountryFlagUtils;
 import com.example.gustoguru.features.meal.presenter.MealDetailPresenter;
 import com.example.gustoguru.features.meal.view.adapters.CountryAdapter;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Meal;

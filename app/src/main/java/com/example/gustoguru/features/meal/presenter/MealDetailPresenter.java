@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.meal.view.calender.CalendarManager;
 import com.example.gustoguru.features.meal.view.MealDetailView;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;

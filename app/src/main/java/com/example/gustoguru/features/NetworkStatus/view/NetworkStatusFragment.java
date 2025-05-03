@@ -1,10 +1,5 @@
 package com.example.gustoguru.features.NetworkStatus.view;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +14,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.NetworkStatus.presenter.NetworkStatusPresenter;
 import com.example.gustoguru.model.network.NetworkUtil;
-
-public class NetworkStatusFragment extends Fragment {
-
+public class NetworkStatusFragment extends Fragment implements NetworkStatusView {
     private LinearLayout networkStatusContainer;
     private ImageView ivNetworkStatus;
     private TextView tvNetworkStatus;
-    private BroadcastReceiver networkReceiver;
+    private NetworkStatusPresenter presenter;
 
     @Nullable
     @Override
@@ -40,8 +34,9 @@ public class NetworkStatusFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
-        updateNetworkStatus(NetworkUtil.isNetworkAvailable(requireContext()));
-        registerNetworkReceiver();
+        presenter = new NetworkStatusPresenter(requireContext(), this);
+        presenter.checkInitialStatus();
+        presenter.registerNetworkReceiver();
     }
 
     private void initializeViews(View view) {
@@ -50,22 +45,8 @@ public class NetworkStatusFragment extends Fragment {
         tvNetworkStatus = view.findViewById(R.id.tvNetworkStatus);
     }
 
-    private void registerNetworkReceiver() {
-        networkReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                boolean isConnected = NetworkUtil.isNetworkAvailable(context);
-                updateNetworkStatus(isConnected);
-            }
-        };
-
-        requireContext().registerReceiver(
-                networkReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        );
-    }
-
-    private void updateNetworkStatus(boolean isConnected) {
+    @Override
+    public void updateNetworkStatus(boolean isConnected) {
         requireActivity().runOnUiThread(() -> {
             if (isConnected) {
                 networkStatusContainer.setBackgroundColor(
@@ -85,8 +66,6 @@ public class NetworkStatusFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (networkReceiver != null) {
-            requireContext().unregisterReceiver(networkReceiver);
-        }
+        presenter.unregisterReceiver();
     }
 }

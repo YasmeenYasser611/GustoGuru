@@ -18,12 +18,11 @@ import com.example.gustoguru.features.favorites.view.FavoritesFragment;
 import com.example.gustoguru.features.home.view.HomeCommunicator;
 import com.example.gustoguru.features.home.view.HomeFragment;
 import com.example.gustoguru.features.main.presenter.MainPresenter;
-import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.navigation.view.NavigationFragment;
 import com.example.gustoguru.features.profile.view.ProfileFragment;
 import com.example.gustoguru.features.search.view.SearchFragment;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
 public class MainActivity extends AppCompatActivity implements
         Mainview,

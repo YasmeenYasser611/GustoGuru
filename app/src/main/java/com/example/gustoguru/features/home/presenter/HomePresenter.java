@@ -2,11 +2,9 @@ package com.example.gustoguru.features.home.presenter;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.example.gustoguru.features.home.view.HomeView;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
@@ -18,7 +16,6 @@ import com.example.gustoguru.model.remote.retrofit.callback.FilteredMealCallback
 import com.example.gustoguru.model.remote.retrofit.callback.IngredientCallback;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
 import com.example.gustoguru.model.repository.MealRepository;
-import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

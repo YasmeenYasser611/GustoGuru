@@ -23,7 +23,7 @@ import com.example.gustoguru.features.home.view.adapters.CategoryAdapter;
 import com.example.gustoguru.features.home.view.adapters.IngredientAdapter;
 import com.example.gustoguru.features.meal.view.MealAdapter;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;

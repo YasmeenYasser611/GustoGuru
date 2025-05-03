@@ -9,7 +9,7 @@ import com.example.gustoguru.features.main.view.Mainview;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.profile.view.ProfileFragment;
 import com.example.gustoguru.features.search.view.SearchFragment;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
 
 public class MainPresenter  {

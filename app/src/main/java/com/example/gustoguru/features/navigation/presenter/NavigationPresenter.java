@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 public class NavigationPresenter {
     private final NavigationCommunicator communicator;
     private final SessionManager sessionManager;

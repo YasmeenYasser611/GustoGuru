@@ -1,6 +1,7 @@
 package com.example.gustoguru.features.profile.view;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,21 +19,16 @@ import androidx.fragment.app.Fragment;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.profile.presenter.ProfilePresenter;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.repository.MealRepository;
-
 public class ProfileFragment extends Fragment implements ProfileView {
     private ProfilePresenter presenter;
     private TextView userNameText;
     private TextView userEmailText;
     private AlertDialog editNameDialog;
-
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,7 +40,6 @@ public class ProfileFragment extends Fragment implements ProfileView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize dependencies
         MealRepository repository = MealRepository.getInstance(
                 AppDatabase.getInstance(requireContext()).favoriteMealDao(),
                 AppDatabase.getInstance(requireContext()).plannedMealDao(),
@@ -54,7 +49,6 @@ public class ProfileFragment extends Fragment implements ProfileView {
         SessionManager sessionManager = new SessionManager(requireContext());
 
         presenter = new ProfilePresenter(this, repository, sessionManager);
-
         initViews(view);
         presenter.loadUserProfile();
     }
@@ -63,21 +57,18 @@ public class ProfileFragment extends Fragment implements ProfileView {
         userNameText = view.findViewById(R.id.user_name);
         userEmailText = view.findViewById(R.id.user_email);
 
-        // Back button
         view.findViewById(R.id.back_button).setOnClickListener(v -> {
             if (getActivity() != null) {
                 getActivity().onBackPressed();
             }
         });
 
-        // Edit name button
         view.findViewById(R.id.edit_name_button).setOnClickListener(v -> {
             String currentName = userNameText.getText().toString();
             showEditNameDialog(currentName);
         });
 
-        // Logout button
-        view.findViewById(R.id.logout_button).setOnClickListener(v -> logoutUser());
+        view.findViewById(R.id.logout_button).setOnClickListener(v -> presenter.logout());
     }
 
     private void showEditNameDialog(String currentName) {
@@ -89,7 +80,6 @@ public class ProfileFragment extends Fragment implements ProfileView {
         Button saveButton = dialogView.findViewById(R.id.save_name_button);
 
         nameEditText.setText(currentName);
-
         editNameDialog = builder.create();
         editNameDialog.show();
 
@@ -102,14 +92,6 @@ public class ProfileFragment extends Fragment implements ProfileView {
                 nameEditText.setError("Name cannot be empty");
             }
         });
-    }
-
-    private void logoutUser() {
-        presenter.logout();
-        if (getActivity() != null) {
-            startActivity(new Intent(getActivity(), LoginActivity.class));
-            getActivity().finish();
-        }
     }
 
     @Override
@@ -171,8 +153,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
         if (editNameDialog != null && editNameDialog.isShowing()) {
             editNameDialog.dismiss();
         }
-        if (presenter != null) {
-            presenter.detachView();
-        }
+        presenter.detachView();
     }
+
+
 }

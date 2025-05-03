@@ -8,7 +8,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.os.Handler;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.splashscreen.view.Splashview;
 public class SplashPresenter {
     private static final long MIN_SPLASH_DURATION = 2000;

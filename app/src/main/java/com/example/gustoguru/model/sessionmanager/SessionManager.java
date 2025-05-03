@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.sessionmanager;
+package com.example.gustoguru.model.sessionmanager;
 
 
 import android.content.Context;

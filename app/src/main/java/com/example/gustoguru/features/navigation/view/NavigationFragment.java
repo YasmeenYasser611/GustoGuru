@@ -1,6 +1,5 @@
 package com.example.gustoguru.features.navigation.view;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.navigation.presenter.NavigationPresenter;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class NavigationFragment extends Fragment {
     private NavigationCommunicator communicator;

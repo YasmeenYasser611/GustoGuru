@@ -106,10 +106,7 @@ public class PlannedFragment extends Fragment implements PlannedView {
         presenter.removePlannedMeal(meal, position);
     }
 
-    private void showMealSelectionDialog(String date) {
-        // Implement your meal selection dialog here
-        // This should show a list of meals that can be added to the selected date
-    }
+
 
     // Implement PlannedView methods
     @Override

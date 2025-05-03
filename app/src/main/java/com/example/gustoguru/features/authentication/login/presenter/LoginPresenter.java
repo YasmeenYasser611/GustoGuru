@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginView;
-import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.repository.MealRepository;
 import com.facebook.AccessToken;
