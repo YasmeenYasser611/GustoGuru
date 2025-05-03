@@ -51,22 +51,17 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
     private static final int REQUEST_CALENDAR_PERMISSION = 1001;
     private MealDetailPresenter presenter;
     private MealAdapter.IngredientsAdapter ingredientsAdapter;
+    private CountryAdapter countryAdapter;
 
     // Views
     private ProgressBar progressBar;
     private ImageView ivMeal;
     private ImageButton btnFavorite;
-    private TextView tvMealName, tvCategory, tvArea, tvInstructions;
+    private TextView tvMealName, tvCategory, tvInstructions;
     private YouTubePlayerView youtubePlayerView;
-    private RecyclerView rvIngredients;
-    private String mealId;
-    private RecyclerView rvCountry;
-    private CountryAdapter countryAdapter;
+    private RecyclerView rvIngredients, rvCountry;
     private LinearLayout youtubeOfflineIndicator;
-
-    public MealDetailFragment() {
-        // Required empty public constructor
-    }
+    private String mealId;
 
     public static MealDetailFragment newInstance(String mealId) {
         MealDetailFragment fragment = new MealDetailFragment();
@@ -85,8 +80,18 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initViews(view);
+        setupAdapters();
+        setupClickListeners();
+        initializePresenter();
 
-        // Initialize views
+        if (getArguments() != null) {
+            mealId = getArguments().getString("MEAL_ID");
+            presenter.getMealDetails(mealId);
+        }
+    }
+
+    private void initViews(View view) {
         progressBar = view.findViewById(R.id.progressBar);
         ivMeal = view.findViewById(R.id.ivMeal);
         btnFavorite = view.findViewById(R.id.btnFavorite);
@@ -96,26 +101,18 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         youtubePlayerView = view.findViewById(R.id.youtubePlayerView);
         rvIngredients = view.findViewById(R.id.rvIngredients);
         rvCountry = view.findViewById(R.id.rvCountry);
+        youtubeOfflineIndicator = view.findViewById(R.id.youtubeOfflineIndicator);
+    }
+
+    private void setupAdapters() {
+        ingredientsAdapter = new MealAdapter.IngredientsAdapter(requireContext());
+        rvIngredients.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvIngredients.setAdapter(ingredientsAdapter);
+
+        countryAdapter = new CountryAdapter(requireContext(), new ArrayList<>());
         rvCountry.setLayoutManager(new LinearLayoutManager(
                 requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        countryAdapter = new CountryAdapter(requireContext(), new ArrayList<>());
         rvCountry.setAdapter(countryAdapter);
-        youtubeOfflineIndicator = view.findViewById(R.id.youtubeOfflineIndicator);
-
-        // Setup RecyclerView
-        setupRecyclerView();
-
-        // Initialize presenter
-        initializePresenter();
-
-        // Get meal ID from arguments
-        if (getArguments() != null) {
-            mealId = getArguments().getString("MEAL_ID");
-            loadMealDetails();
-        }
-
-        // Set up click listeners
-        setupClickListeners();
     }
 
     private void setupClickListeners() {
@@ -126,29 +123,10 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
             btnFavorite.setAlpha(0.5f);
         }
 
-        btnFavorite.setOnClickListener(v -> {
-            if (!sessionManager.isLoggedIn()) {
-                showLoginRequired("Please register or login to add favorites");
-                return;
-            }
-            presenter.toggleFavorite();
-        });
-
+        btnFavorite.setOnClickListener(v -> presenter.toggleFavorite());
 
         ImageButton btnAddToCalendar = requireView().findViewById(R.id.btnAddToCalendar);
-        btnAddToCalendar.setOnClickListener(v -> {
-            if (!sessionManager.isLoggedIn()) {
-                showLoginRequired("Please register or login to plan meals");
-                return;
-            }
-            showDatePickerForNextWeek(); // This will handle permission check/request
-        });
-    }
-
-    private void setupRecyclerView() {
-        ingredientsAdapter = new MealAdapter.IngredientsAdapter(requireContext());
-        rvIngredients.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvIngredients.setAdapter(ingredientsAdapter);
+        btnAddToCalendar.setOnClickListener(v -> presenter.checkCalendarPermission());
     }
 
     private void initializePresenter() {
@@ -164,14 +142,6 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         );
     }
 
-    private void loadMealDetails() {
-        if (mealId == null || mealId.isEmpty()) {
-            showError("Invalid meal ID");
-            return;
-        }
-        presenter.getMealDetails(mealId);
-    }
-
     @Override
     public void showLoading() {
         requireActivity().runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
@@ -180,20 +150,6 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
     @Override
     public void hideLoading() {
         requireActivity().runOnUiThread(() -> progressBar.setVisibility(View.GONE));
-    }
-
-    @Override
-    public void showLoginRequired(String message) {
-        requireActivity().runOnUiThread(() -> {
-            new AlertDialog.Builder(requireContext())
-                    .setTitle("Login Required")
-                    .setMessage(message)
-                    .setPositiveButton("Login", (dialog, which) -> {
-                        startActivity(new Intent(requireContext(), LoginActivity.class));
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        });
     }
 
     @Override
@@ -207,7 +163,6 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
                     .load(meal.getStrMealThumb())
                     .into(ivMeal);
 
-            // Update country RecyclerView
             if (meal.getStrArea() != null && !meal.getStrArea().isEmpty()) {
                 List<CountryAdapter.CountryItem> countries = new ArrayList<>();
                 countries.add(new CountryAdapter.CountryItem(
@@ -220,8 +175,6 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
             } else {
                 rvCountry.setVisibility(View.GONE);
             }
-
-            updateFavoriteButton(meal.isFavorite());
         });
     }
 
@@ -280,9 +233,18 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         });
     }
 
+    private String extractYouTubeId(String url) {
+        String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\\?video_id=)([^#\\&\\?\\n]*)";
+        Matcher matcher = Pattern.compile(pattern).matcher(url);
+        return matcher.find() ? matcher.group() : null;
+    }
+
     @Override
     public void showFavoriteStatus(boolean isFavorite) {
-        requireActivity().runOnUiThread(() -> updateFavoriteButton(isFavorite));
+        requireActivity().runOnUiThread(() -> {
+            int iconRes = isFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border;
+            btnFavorite.setImageResource(iconRes);
+        });
     }
 
     @Override
@@ -291,85 +253,63 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show());
     }
 
-    private void updateFavoriteButton(boolean isFavorite) {
-        int iconRes = isFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border;
-        btnFavorite.setImageResource(iconRes);
+    @Override
+    public void showLoginRequired(String message) {
+        requireActivity().runOnUiThread(() -> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Login Required")
+                    .setMessage(message)
+                    .setPositiveButton("Login", (dialog, which) -> {
+                        startActivity(new Intent(requireContext(), LoginActivity.class));
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
     }
-
-    private String extractYouTubeId(String url) {
-        String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\\?video_id=)([^#\\&\\?\\n]*)";
-        Matcher matcher = Pattern.compile(pattern).matcher(url);
-        return matcher.find() ? matcher.group() : null;
-    }
-
 
     @Override
     public void showPlannerSuccess(String date) {
-        requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(),
-                getString(R.string.meal_added_to_planner, date),
-                Toast.LENGTH_SHORT).show());
+        requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(),
+                        getString(R.string.meal_added_to_planner, date),
+                        Toast.LENGTH_SHORT).show());
     }
 
     @Override
     public void showCalendarSuccess() {
-        requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(),
-                R.string.added_to_device_calendar,
-                Toast.LENGTH_SHORT).show());
+        requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(),
+                        R.string.added_to_device_calendar,
+                        Toast.LENGTH_SHORT).show());
     }
-
-
 
     @Override
     public void requestCalendarPermission(int requestCode) {
-        // Simple permission request without rationale dialog
         requestPermissions(
                 new String[]{Manifest.permission.WRITE_CALENDAR},
                 requestCode
         );
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CALENDAR_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showDatePickerForNextWeek();
-            } else {
-                showError("Calendar permission denied");
-            }
-        }
-    }
-
-    private void showDatePickerForNextWeek() {
-        // First check if we already have permission
-        if (ContextCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-            // We have permission, show the date picker
-            Calendar today = Calendar.getInstance();
-            Calendar maxDate = Calendar.getInstance();
-            maxDate.add(Calendar.DAY_OF_YEAR, 6);
-            showDatePicker(today, maxDate);
-        } else {
-            // Request permission directly
-            requestCalendarPermission(REQUEST_CALENDAR_PERMISSION);
+        if (requestCode == REQUEST_CALENDAR_PERMISSION &&
+                grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            presenter.checkCalendarPermission();
         }
     }
 
     @Override
     public void showDatePicker(Calendar minDate, Calendar maxDate) {
-        if (!isAdded() || getActivity() == null) return;
-
         requireActivity().runOnUiThread(() -> {
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     requireContext(),
                     (view, year, month, day) -> {
                         Calendar selectedDate = Calendar.getInstance();
                         selectedDate.set(year, month, day);
-                        if (presenter != null) {
-                            presenter.handleDateSelected(selectedDate);
-                        }
+                        presenter.handleDateSelected(selectedDate);
                     },
                     minDate.get(Calendar.YEAR),
                     minDate.get(Calendar.MONTH),
@@ -388,8 +328,5 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
             youtubePlayerView.release();
         }
         presenter.onDestroy();
-
     }
-
-
 }

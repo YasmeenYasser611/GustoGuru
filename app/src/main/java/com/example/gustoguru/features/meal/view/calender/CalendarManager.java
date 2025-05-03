@@ -19,7 +19,7 @@ import java.util.TimeZone;
 public class CalendarManager
 {
     private final Context context;
-    private static final int REQUEST_CALENDAR_PERMISSION = 1001;
+    public static final int REQUEST_CALENDAR_PERMISSION = 1001;
 
     public CalendarManager(Context context)
     {

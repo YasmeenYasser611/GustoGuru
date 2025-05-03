@@ -1,13 +1,20 @@
 package com.example.gustoguru.features.meal.presenter;
 
-import android.content.Context;
+import static com.example.gustoguru.features.meal.view.calender.CalendarManager.REQUEST_CALENDAR_PERMISSION;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.meal.view.calender.CalendarManager;
 import com.example.gustoguru.features.meal.view.MealDetailView;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
+import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.retrofit.callback.MealCallback;
 import com.example.gustoguru.model.repository.MealRepository;
@@ -15,6 +22,8 @@ import com.example.gustoguru.model.repository.MealRepository;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MealDetailPresenter {
     private MealDetailView view;
@@ -100,8 +109,8 @@ public class MealDetailPresenter {
 
 
 
-    public void handleDateSelected(Calendar selectedDate)
-    {
+
+    public void handleDateSelected(Calendar selectedDate) {
         if (!sessionManager.isLoggedIn()) {
             view.showLoginRequired("Please register or login to plan meals");
             return;
@@ -112,36 +121,82 @@ public class MealDetailPresenter {
             return;
         }
 
-        // Format date for our planner
-        String formattedDate = String.format(Locale.getDefault(),
-                "%04d-%02d-%02d",
-                selectedDate.get(Calendar.YEAR),
-                selectedDate.get(Calendar.MONTH) + 1,
-                selectedDate.get(Calendar.DAY_OF_MONTH));
-
-
+        String formattedDate = formatDateForPlanner(selectedDate);
         repository.addPlannedMeal(currentMeal, formattedDate);
         view.showPlannerSuccess(formattedDate);
 
-
-        calendarManager.addMealToCalendar(currentMeal, selectedDate, new CalendarManager.CalendarOperationCallback()
-        {
-            @Override
-            public void onSuccess() {
-                view.showCalendarSuccess();
-            }
-
-            @Override
-            public void onFailure(String message) {
-                view.showError(message);
-            }
-
-            @Override
-            public void onPermissionRequired(int requestCode) {
-                view.requestCalendarPermission(requestCode);
-            }
-        });
+        addToCalendar(selectedDate);
     }
+
+    private String formatDateForPlanner(Calendar date) {
+        return String.format(Locale.getDefault(),
+                "%04d-%02d-%02d",
+                date.get(Calendar.YEAR),
+                date.get(Calendar.MONTH) + 1,
+                date.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private void addToCalendar(Calendar selectedDate) {
+        calendarManager.addMealToCalendar(currentMeal, selectedDate,
+                new CalendarManager.CalendarOperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        view.showCalendarSuccess();
+                    }
+                    @Override
+                    public void onFailure(String message) {
+                        view.showError(message);
+                    }
+                    @Override
+                    public void onPermissionRequired(int requestCode) {
+                        view.requestCalendarPermission(requestCode);
+                    }
+                });
+    }
+
+    public void checkCalendarPermission() {
+        if (hasCalendarPermission()) {
+            showDatePicker();
+        } else {
+            view.requestCalendarPermission(REQUEST_CALENDAR_PERMISSION);
+        }
+    }
+
+    private boolean hasCalendarPermission() {
+        return ContextCompat.checkSelfPermission(
+                ((MealDetailFragment)view).requireContext(),
+                Manifest.permission.WRITE_CALENDAR
+        ) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void showDatePicker() {
+        Calendar today = Calendar.getInstance();
+        Calendar maxDate = Calendar.getInstance();
+        maxDate.add(Calendar.DAY_OF_YEAR, 6);
+        view.showDatePicker(today, maxDate);
+    }
+
+    public void handleYoutubeVideo(String videoUrl) {
+        if (videoUrl == null || videoUrl.isEmpty()) {
+            view.showYoutubeVideo(null);
+            return;
+        }
+
+        if (!NetworkUtil.isNetworkAvailable(((MealDetailFragment)view).requireContext())) {
+            view.showYoutubeVideo(""); // Empty string indicates offline mode
+            return;
+        }
+
+        String videoId = extractYouTubeId(videoUrl);
+        view.showYoutubeVideo(videoId != null ? videoUrl : null);
+    }
+
+    private String extractYouTubeId(String url) {
+        String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\\?video_id=)([^#\\&\\?\\n]*)";
+        Matcher matcher = Pattern.compile(pattern).matcher(url);
+        return matcher.find() ? matcher.group() : null;
+    }
+
     public void onDestroy() {
         view = null;
     }

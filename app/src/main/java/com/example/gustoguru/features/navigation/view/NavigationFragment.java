@@ -1,5 +1,6 @@
 package com.example.gustoguru.features.navigation.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,19 +12,20 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.navigation.presenter.NavigationPresenter;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-public class NavigationFragment extends Fragment
-{
+public class NavigationFragment extends Fragment {
     private NavigationCommunicator communicator;
     private BottomNavigationView bottomNav;
+    private NavigationPresenter presenter;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof NavigationCommunicator) {
             communicator = (NavigationCommunicator) context;
+            presenter = new NavigationPresenter(communicator, context);
         } else {
             throw new RuntimeException(context + " must implement NavigationCommunicator");
         }
@@ -46,37 +48,7 @@ public class NavigationFragment extends Fragment
     private void setupNavigation() {
         bottomNav.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            SessionManager sessionManager = new SessionManager(requireActivity());
-
-            if (id == R.id.nav_home) {
-                communicator.navigateToHome();
-                return true;
-            }
-            else if (id == R.id.nav_search) {
-                communicator.navigateToSearch();
-                return true;
-            }
-            else if (id == R.id.nav_fav) {
-                if (!sessionManager.isLoggedIn()) {
-                    communicator.showLoginRequiredDialog("Please login to view favorites");
-                    return false;
-                }
-                communicator.navigateToFavorites();
-                return true;
-            }
-            else if (id == R.id.nav_planner) {
-                if (!sessionManager.isLoggedIn()) {
-                    communicator.showLoginRequiredDialog("Please login to view planner");
-                    return false;
-                }
-                communicator.navigateToPlannedMeals();
-                return true;
-            }
-            else if (id == R.id.nav_profile) {
-                communicator.navigateToProfile();
-                return true;
-            }
-            return false;
+            return presenter.handleNavigationItemSelected(id);
         });
     }
 
@@ -90,5 +62,6 @@ public class NavigationFragment extends Fragment
     public void onDetach() {
         super.onDetach();
         communicator = null;
+        presenter = null;
     }
 }
