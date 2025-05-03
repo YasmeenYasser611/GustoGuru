@@ -46,7 +46,7 @@
     <color name="fun_text_color">#FF333333</color>
     <color name="fun_chip_color_light">#33FF9800</color> <!-- 20% opacity of your chip color -->
 
-
+    <color name="youtube_offline_bg">#80000000</color>  <!-- 50% black overlay -->
 
     <color name="primary_text_color">#212121</color> <!-- Dark Text -->
 
@@ -63,5 +63,9 @@
     <color name="offline_status_bg">#FFF44336</color>
     <color name="offline_status_text">#FFFFFF</color>
     <color name="online_status_bg">#FF4CAF50</color>
+
+    <!-- For offline state highlighting -->
+    <color name="offline_highlight">#FF5252</color>  <!-- Red 500 -->
+    <color name="offline_background_tint">#33000000</color>  <!-- Semi-transparent dark -->
 
 </resources>

@@ -100,6 +100,31 @@
                     android:layout_height="200dp"
                     android:layout_marginTop="16dp"
                     android:visibility="gone"/>
+
+                <!-- Offline Indicator (INSIDE YouTube frame) -->
+                <LinearLayout
+                    android:id="@+id/youtubeOfflineIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_offline"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No internet connection"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="8dp"
+                    android:textSize="12sp" />
+            </LinearLayout>
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>

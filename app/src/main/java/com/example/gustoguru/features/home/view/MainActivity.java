@@ -124,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
         if (sessionManager.isLoggedIn()) {
             replaceFragment(new ProfileFragment(), true);
         } else {
-            navigateToLogin();
+//            navigateToLogin();
+            showLoginRequiredDialog("Please login to view favorites");
         }
     }
 

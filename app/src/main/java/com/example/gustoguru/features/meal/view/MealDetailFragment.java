@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import com.example.gustoguru.features.home.view.CountryFlagUtils;
 import com.example.gustoguru.features.meal.presenter.MealDetailPresenter;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
+import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
@@ -64,6 +66,7 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
     private String mealId;
     private RecyclerView rvCountry;
     private CountryAdapter countryAdapter;
+    private LinearLayout youtubeOfflineIndicator;
 
     public MealDetailFragment() {
         // Required empty public constructor
@@ -101,6 +104,7 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
                 requireContext(), LinearLayoutManager.HORIZONTAL, false));
         countryAdapter = new CountryAdapter(requireContext(), new ArrayList<>());
         rvCountry.setAdapter(countryAdapter);
+        youtubeOfflineIndicator = view.findViewById(R.id.youtubeOfflineIndicator);
 
         // Setup RecyclerView
         setupRecyclerView();
@@ -232,23 +236,45 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         });
     }
 
+
     @Override
     public void showYoutubeVideo(String videoUrl) {
         requireActivity().runOnUiThread(() -> {
+            // Reset UI first
+            youtubePlayerView.setVisibility(View.VISIBLE);
+            youtubeOfflineIndicator.setVisibility(View.GONE);
+
             if (videoUrl == null || videoUrl.isEmpty()) {
                 youtubePlayerView.setVisibility(View.GONE);
                 return;
             }
 
+            // Check network status
+            boolean isOnline = NetworkUtil.isNetworkAvailable(requireContext());
+
+            if (!isOnline) {
+                // Show indicator INSIDE the YouTube frame
+                youtubeOfflineIndicator.setVisibility(View.VISIBLE);
+
+                // Optional: Add a semi-transparent background to the YouTube player
+                youtubePlayerView.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.youtube_offline_bg)
+                );
+
+                // Release player to save resources
+                youtubePlayerView.release();
+                return;
+            }
+
+            // Extract video ID (only if online)
             String videoId = extractYouTubeId(videoUrl);
             if (videoId == null) {
                 youtubePlayerView.setVisibility(View.GONE);
                 return;
             }
 
-            youtubePlayerView.setVisibility(View.VISIBLE);
+            // Initialize YouTube player
             getLifecycle().addObserver(youtubePlayerView);
-
             youtubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
                 @Override
                 public void onReady(@NonNull YouTubePlayer youTubePlayer) {
