@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.search.view;
+package com.example.gustoguru.features.search.view.suggestions;
 
 import android.view.LayoutInflater;
 import android.view.View;

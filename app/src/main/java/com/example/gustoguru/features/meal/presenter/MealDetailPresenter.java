@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
-import com.example.gustoguru.features.meal.view.CalendarManager;
+import com.example.gustoguru.features.meal.view.calender.CalendarManager;
 import com.example.gustoguru.features.meal.view.MealDetailView;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.pojo.Meal;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MealDetailPresenter {
-    private final MealDetailView view;
+    private MealDetailView view;
     private final MealRepository repository;
     private Meal currentMeal;
     private boolean isFavorite = false;
@@ -141,6 +141,9 @@ public class MealDetailPresenter {
                 view.requestCalendarPermission(requestCode);
             }
         });
+    }
+    public void onDestroy() {
+        view = null;
     }
 
 }

@@ -1,15 +1,11 @@
 package com.example.gustoguru.features.meal.view;
 
-import static android.content.Intent.getIntent;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,8 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
-import com.example.gustoguru.features.home.view.CountryFlagUtils;
+import com.example.gustoguru.features.home.view.utils.CountryFlagUtils;
 import com.example.gustoguru.features.meal.presenter.MealDetailPresenter;
+import com.example.gustoguru.features.meal.view.adapters.CountryAdapter;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.network.NetworkUtil;
@@ -54,7 +50,7 @@ import java.util.regex.Pattern;
 public class MealDetailFragment extends Fragment implements MealDetailView {
     private static final int REQUEST_CALENDAR_PERMISSION = 1001;
     private MealDetailPresenter presenter;
-    private IngredientsAdapter ingredientsAdapter;
+    private MealAdapter.IngredientsAdapter ingredientsAdapter;
 
     // Views
     private ProgressBar progressBar;
@@ -150,7 +146,7 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
     }
 
     private void setupRecyclerView() {
-        ingredientsAdapter = new IngredientsAdapter(requireContext());
+        ingredientsAdapter = new MealAdapter.IngredientsAdapter(requireContext());
         rvIngredients.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvIngredients.setAdapter(ingredientsAdapter);
     }
@@ -306,13 +302,6 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
         return matcher.find() ? matcher.group() : null;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (youtubePlayerView != null) {
-            youtubePlayerView.release();
-        }
-    }
 
     @Override
     public void showPlannerSuccess(String date) {
@@ -391,5 +380,16 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
             datePickerDialog.show();
         });
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (youtubePlayerView != null) {
+            youtubePlayerView.release();
+        }
+        presenter.onDestroy();
+
+    }
+
 
 }

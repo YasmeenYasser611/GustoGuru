@@ -1,23 +1,16 @@
 package com.example.gustoguru.features.home.view;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,11 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.home.presenter.HomePresenter;
+import com.example.gustoguru.features.home.view.adapters.AreaAdapter;
+import com.example.gustoguru.features.home.view.adapters.CategoryAdapter;
+import com.example.gustoguru.features.home.view.adapters.IngredientAdapter;
 import com.example.gustoguru.features.meal.view.MealAdapter;
-import com.example.gustoguru.features.meal.view.MealDetailFragment;
+import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
-import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
@@ -41,7 +36,7 @@ import com.example.gustoguru.model.repository.MealRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 public class HomeFragment extends Fragment implements HomeView,
         CategoryAdapter.OnCategoryClickListener,
         AreaAdapter.OnAreaClickListener,

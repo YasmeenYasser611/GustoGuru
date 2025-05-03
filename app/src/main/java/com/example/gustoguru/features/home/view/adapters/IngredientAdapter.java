@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.home.view;
+package com.example.gustoguru.features.home.view.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;

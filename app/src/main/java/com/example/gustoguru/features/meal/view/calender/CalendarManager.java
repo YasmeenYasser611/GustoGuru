@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.meal.view;
+package com.example.gustoguru.features.meal.view.calender;
 
 import android.Manifest;
 import android.content.ContentResolver;

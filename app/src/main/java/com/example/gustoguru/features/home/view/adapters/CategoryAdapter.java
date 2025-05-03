@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.home.view;
+package com.example.gustoguru.features.home.view.adapters;
 
 
 import android.content.Context;
@@ -10,15 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,7 +31,6 @@ import com.example.gustoguru.R;
 import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Category;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;

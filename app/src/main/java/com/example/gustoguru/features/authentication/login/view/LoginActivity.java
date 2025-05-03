@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.presenter.LoginPresenter;
 import com.example.gustoguru.features.authentication.registeration.view.RegistrationActivity;
-import com.example.gustoguru.features.home.view.MainActivity;
+import com.example.gustoguru.features.main.view.MainActivity;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;

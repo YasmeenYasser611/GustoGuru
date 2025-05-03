@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.home.view;
+package com.example.gustoguru.features.home.view.utils;
 import java.util.HashMap;
 import java.util.Map;
 

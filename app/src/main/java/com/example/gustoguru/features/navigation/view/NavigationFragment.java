@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.home.view;
+package com.example.gustoguru.features.navigation.view;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,9 +13,6 @@ import androidx.fragment.app.Fragment;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-
-import android.util.Log;
 
 public class NavigationFragment extends Fragment
 {

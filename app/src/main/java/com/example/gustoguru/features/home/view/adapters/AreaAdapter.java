@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.home.view;
+package com.example.gustoguru.features.home.view.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -27,6 +27,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.home.view.utils.CountryFlagUtils;
 import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Area;
 

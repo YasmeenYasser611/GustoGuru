@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/soft_peach"
-    tools:context=".features.home.view.MainActivity">
+    tools:context=".features.main.view.MainActivity">
 
     <!-- Network Status Bar (Top) -->
     <FrameLayout

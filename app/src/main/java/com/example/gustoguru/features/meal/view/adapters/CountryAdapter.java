@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.meal.view;
+package com.example.gustoguru.features.meal.view.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -39,38 +39,6 @@ public class FavoritesPresenter {
         };
     }
 
-//    public void loadFavorites() {
-//        view.showLoading();
-//        repository.getAllFavorites().observeForever(new Observer<List<Meal>>() {
-//            @Override
-//            public void onChanged(List<Meal> meals) {
-//                view.hideLoading();
-//                currentMeals = meals;
-//                if (meals == null || meals.isEmpty()) {
-//                    view.showError("No favorites found");
-//                } else {
-//                    view.showFavorites(meals);
-//                }
-//            }
-//        });
-//    }
-//public void loadFavorites() {
-//    view.showLoading();
-//
-//    // Replace getAllFavorites() with getUserFavorites()
-//    repository.getUserFavorites().observeForever(new Observer<List<Meal>>() {
-//        @Override
-//        public void onChanged(List<Meal> meals) {
-//            view.hideLoading();
-//            currentMeals = meals;
-//            if (meals == null || meals.isEmpty()) {
-//                view.showError("No favorites found");
-//            } else {
-//                view.showFavorites(meals);
-//            }
-//        }
-//    });
-//}
 public void loadFavorites() {
     if (view != null) {
         view.showLoading();

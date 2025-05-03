@@ -19,7 +19,6 @@ import com.example.gustoguru.model.repository.MealRepository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 public class SearchPresenter {
     private SearchView view;
     private final MealRepository repository;
@@ -32,40 +31,32 @@ public class SearchPresenter {
         this.repository = repository;
     }
 
-    public void performSearch(String query) {
+    public void performSearch(String query, String searchMethod) {
         if (query.isEmpty()) {
             view.showError("Please enter a search term");
             return;
         }
 
-        // Auto-detect search type
-        for (Category c : allCategories) {
-            if (c.getStrCategory().equalsIgnoreCase(query)) {
+        switch (searchMethod) {
+            case "Name":
+                searchByName(query);
+                break;
+            case "Category":
                 searchByCategory(query);
-                return;
-            }
-        }
-
-        for (Area a : allAreas) {
-            if (a.getStrArea().equalsIgnoreCase(query)) {
-                searchByArea(query);
-                return;
-            }
-        }
-
-        for (Ingredient i : allIngredients) {
-            if (i.getStrIngredient().equalsIgnoreCase(query)) {
+                break;
+            case "Ingredient":
                 searchByIngredient(query);
-                return;
-            }
+                break;
+            case "Country":
+                searchByArea(query);
+                break;
+            default:
+                searchByName(query);
+                break;
         }
-
-        // Default to name search
-        searchByName(query);
     }
 
-    public void filterSuggestions(String query, String method)
-    {
+    public void filterSuggestions(String query, String method) {
         if (query.isEmpty()) {
             view.showSuggestions(Collections.emptyList());
             return;
@@ -89,17 +80,21 @@ public class SearchPresenter {
                     }
                 }
                 break;
-            case "Area":
+            case "Country":
                 for (Area a : allAreas) {
                     if (a.getStrArea().toLowerCase().contains(queryLower)) {
                         filtered.add(a.getStrArea());
                     }
                 }
                 break;
+            case "Name":
+                // No suggestions for name search
+                break;
         }
 
         view.showSuggestions(filtered);
     }
+
     public void setCategories(List<Category> categories) {
         this.allCategories = categories;
     }
@@ -111,52 +106,44 @@ public class SearchPresenter {
     public void setAreas(List<Area> areas) {
         this.allAreas = areas;
     }
-
-    public void searchByName(String query) {
-        Log.d("SearchDebug", "Presenter.searchByName called with: " + query);
-
-        if (query.isEmpty()) {
-            view.showError("Please enter a search term");
-            return;
-        }
-
+    private void searchByName(String query) {
         view.showLoading();
         repository.searchMealsByName(query, new MealCallback() {
             @Override
             public void onSuccess(List<Meal> meals) {
-                Log.d("SearchDebug", "Repository returned " + meals.size() + " meals");
                 view.hideLoading();
-                if (meals.isEmpty()) {
+                if (meals == null || meals.isEmpty()) {  // Handle null case
                     view.showError("No meals found");
                 } else {
                     List<FilteredMeal> filteredMeals = new ArrayList<>();
                     for (Meal meal : meals) {
-                        filteredMeals.add(new FilteredMeal(
-                                meal.getIdMeal(),
-                                meal.getStrMeal(),
-                                meal.getStrMealThumb()
-                        ));
+                        if (meal != null) {  // Additional null check for individual meals
+                            filteredMeals.add(new FilteredMeal(
+                                    meal.getIdMeal(),
+                                    meal.getStrMeal(),
+                                    meal.getStrMealThumb()
+                            ));
+                        }
                     }
-                    view.showSearchResults(filteredMeals);
+                    view.showSearchResults(filteredMeals.isEmpty() ? null : filteredMeals);
                 }
             }
 
             @Override
             public void onFailure(String message) {
-                Log.e("SearchDebug", "Search failed: " + message);
                 view.hideLoading();
                 view.showError(message);
             }
         });
     }
 
-    public void searchByCategory(String category) {
+    private void searchByCategory(String category) {
         view.showLoading();
         repository.filterByCategory(category, new FilteredMealCallback() {
             @Override
             public void onSuccess(List<FilteredMeal> meals) {
                 view.hideLoading();
-                view.showSearchResults(meals);
+                view.showSearchResults(meals == null || meals.isEmpty() ? null : meals);
             }
             @Override
             public void onFailure(String message) {
@@ -166,13 +153,13 @@ public class SearchPresenter {
         });
     }
 
-    public void searchByIngredient(String ingredient) {
+    private void searchByIngredient(String ingredient) {
         view.showLoading();
         repository.filterByIngredient(ingredient, new FilteredMealCallback() {
             @Override
             public void onSuccess(List<FilteredMeal> meals) {
                 view.hideLoading();
-                view.showSearchResults(meals);
+                view.showSearchResults(meals == null || meals.isEmpty() ? null : meals);
             }
             @Override
             public void onFailure(String message) {
@@ -181,14 +168,13 @@ public class SearchPresenter {
             }
         });
     }
-
-    public void searchByArea(String area) {
+    private void searchByArea(String area) {
         view.showLoading();
         repository.filterByArea(area, new FilteredMealCallback() {
             @Override
             public void onSuccess(List<FilteredMeal> meals) {
                 view.hideLoading();
-                view.showSearchResults(meals);
+                view.showSearchResults(meals == null || meals.isEmpty() ? null : meals);
             }
             @Override
             public void onFailure(String message) {
@@ -243,6 +229,5 @@ public class SearchPresenter {
 
     public void detachView() {
         this.view = null;
-
     }
 }

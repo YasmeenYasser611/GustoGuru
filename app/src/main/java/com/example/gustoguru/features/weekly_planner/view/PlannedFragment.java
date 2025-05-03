@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import com.applandeo.materialcalendarview.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,15 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.applandeo.materialcalendarview.EventDay;
 import com.example.gustoguru.R;
-import com.example.gustoguru.features.home.view.NavigationCommunicator;
-import com.example.gustoguru.features.meal.view.MealAdapter;
+import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.weekly_planner.presenter.PlannedPresenter;
 import com.example.gustoguru.model.local.AppDatabase;
 import com.example.gustoguru.model.pojo.Meal;
 import com.example.gustoguru.model.remote.firebase.FirebaseClient;
 import com.example.gustoguru.model.remote.retrofit.client.MealClient;
 import com.example.gustoguru.model.repository.MealRepository;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
