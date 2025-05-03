@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
+import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.profile.presenter.ProfilePresenter;
 import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
@@ -29,6 +30,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
     private TextView userNameText;
     private TextView userEmailText;
     private AlertDialog editNameDialog;
+    private Button favoritesButton;
+    private Button plannedMealsButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,6 +54,26 @@ public class ProfileFragment extends Fragment implements ProfileView {
         presenter = new ProfilePresenter(this, repository, sessionManager);
         initViews(view);
         presenter.loadUserProfile();
+        favoritesButton = view.findViewById(R.id.favorites_button);
+        plannedMealsButton = view.findViewById(R.id.planned_meals_button);
+
+        // Set click listeners
+        favoritesButton.setOnClickListener(v -> {
+            if (presenter.isLoggedIn()) {
+                ((NavigationCommunicator)requireActivity()).navigateToFavorites();
+            } else {
+                ((NavigationCommunicator)requireActivity()).showLoginRequiredDialog("Please login to view favorites");
+            }
+        });
+
+        plannedMealsButton.setOnClickListener(v -> {
+            if (presenter.isLoggedIn()) {
+                ((NavigationCommunicator)requireActivity()).navigateToPlannedMeals();
+            } else {
+                ((NavigationCommunicator)requireActivity()).showLoginRequiredDialog("Please login to view planned meals");
+
+            }
+        });
     }
 
     private void initViews(View view) {

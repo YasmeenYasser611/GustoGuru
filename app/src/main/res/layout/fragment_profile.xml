@@ -6,25 +6,18 @@
     android:orientation="vertical"
     android:padding="24dp"
     android:gravity="center_horizontal"
-    android:background="@color/white">
+    android:background="@color/soft_peach">
 
     <!-- Back Button -->
     <ImageButton
         android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="start"
-        android:src="@drawable/ic_arrow_back"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/back_button"/>
-
-    <!-- Progress Bar -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:src="@android:drawable/ic_menu_revert"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back button"
+        android:padding="8dp"/>
 
     <!-- Profile Image -->
     <ImageView
@@ -32,35 +25,37 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="20dp"
-        android:src="@drawable/nav_profile"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_cute_chef"
         android:background="@drawable/circle_background"
         android:padding="16dp" />
 
     <!-- Name Section -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textColor="@android:color/black"
             android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
             tools:text="John Doe"/>
 
         <ImageButton
             android:id="@+id/edit_name_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
-            android:src="@drawable/ic_edit"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/edit_name"/>
+            android:src="@android:drawable/ic_menu_edit"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Edit name"/>
     </LinearLayout>
 
     <!-- Email -->
@@ -71,17 +66,58 @@
         android:layout_marginTop="8dp"
         android:textSize="16sp"
         android:textColor="@android:color/darker_gray"
+        android:fontFamily="sans-serif"
         tools:text="john@example.com"/>
+
+    <!-- Favorites Button -->
+    <Button
+        android:id="@+id/favorites_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="⭐ My Favorites"
+        android:drawableLeft="@android:drawable/btn_star_big_on"
+        android:drawablePadding="8dp"
+        android:backgroundTint="@android:color/holo_purple"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:fontFamily="sans-serif"/>
+
+    <!-- Planned Meals Button -->
+    <Button
+        android:id="@+id/planned_meals_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="🍽️ Planned Meals"
+        android:drawableLeft="@android:drawable/ic_menu_today"
+        android:drawablePadding="8dp"
+        android:backgroundTint="@android:color/holo_purple"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:fontFamily="sans-serif"/>
 
     <!-- Logout Button -->
     <Button
         android:id="@+id/logout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="@string/logout"
-        android:backgroundTint="@color/red_100"
-        android:textColor="@android:color/white"
+        android:layout_marginTop="24dp"
+        android:text="🚪 Logout"
         android:drawableLeft="@drawable/ic_logout"
-        android:padding="12dp"/>
+        android:drawablePadding="8dp"
+        android:backgroundTint="@android:color/holo_purple"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:fontFamily="sans-serif"/>
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"/>
 </LinearLayout>
+

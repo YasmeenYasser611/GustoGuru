@@ -72,4 +72,8 @@ public class ProfilePresenter  {
     public void detachView() {
         this.view = null;
     }
+    public boolean isLoggedIn() {
+        return sessionManager.isLoggedIn();
+    }
+
 }
