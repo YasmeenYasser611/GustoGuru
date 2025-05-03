@@ -62,8 +62,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         holder.textViewDescription.setText(category.getStrCategoryDescription());
 
         RequestOptions requestOptions = new RequestOptions()
-                .override(120, 80)
-                .centerCrop()
                 .placeholder(R.drawable.placeholder_meal)
                 .error(R.drawable.ic_close_emoji);
 

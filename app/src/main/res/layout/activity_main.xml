@@ -6,18 +6,25 @@
     android:background="@color/soft_peach"
     tools:context=".features.home.view.MainActivity">
 
+    <!-- Network Status Bar (Top) -->
+    <FrameLayout
+        android:id="@+id/network_status_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
     <!-- Main content container -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_nav_container"/>
+        android:layout_below="@id/network_status_container"
+        android:layout_above="@id/bottom_nav_container"/>
 
-    <!-- Bottom navigation container (will hold our navigation fragment) -->
+    <!-- Bottom navigation container -->
     <FrameLayout
         android:id="@+id/bottom_nav_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"/>
-
 </RelativeLayout>

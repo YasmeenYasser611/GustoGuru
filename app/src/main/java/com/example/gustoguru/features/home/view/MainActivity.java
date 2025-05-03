@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.gustoguru.R;
 //import com.example.gustoguru.features.authentication.login.view.LoginActivity;
+import com.example.gustoguru.features.NetworkStatus.view.NetworkStatusFragment;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.favorites.view.FavoritesFragment;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
@@ -36,6 +37,12 @@ public class MainActivity extends AppCompatActivity implements NavigationCommuni
 
         sessionManager = new SessionManager(this);
         fragmentManager = getSupportFragmentManager();
+
+        // In your MainActivity's onCreate() after setContentView()
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.network_status_container, new NetworkStatusFragment())
+                .commit();
 
         if (savedInstanceState == null) {
             // Add Navigation Fragment

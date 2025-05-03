@@ -80,10 +80,7 @@ public class HomeFragment extends Fragment implements HomeView,
     private HomePresenter presenter;
     private SessionManager sessionManager;
     private HomeCommunicator communicator;
-    private LinearLayout networkStatusContainer;
-    private ImageView ivNetworkStatus;
-    private TextView tvNetworkStatus;
-    private BroadcastReceiver networkReceiver;
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -106,8 +103,6 @@ public class HomeFragment extends Fragment implements HomeView,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
-        updateNetworkStatus(NetworkUtil.isNetworkAvailable(requireContext()));
-        registerNetworkReceiver();
         setupAdapters();
         setupRecyclerViews();
         initializePresenter();
@@ -135,9 +130,7 @@ public class HomeFragment extends Fragment implements HomeView,
         mealsByIngredientContainer = view.findViewById(R.id.mealsByIngredientContainer);
         tvIngredientsTitle = view.findViewById(R.id.tvIngredientsTitle);
         tvMealsByIngredientTitle = view.findViewById(R.id.tvMealsByIngredientTitle);
-        networkStatusContainer = view.findViewById(R.id.networkStatusContainer);
-        ivNetworkStatus = view.findViewById(R.id.ivNetworkStatus);
-        tvNetworkStatus = view.findViewById(R.id.tvNetworkStatus);
+
     }
 
     private void setupAdapters() {
@@ -342,39 +335,9 @@ public class HomeFragment extends Fragment implements HomeView,
     public void onDestroyView() {
         super.onDestroyView();
         presenter.onDestroy();
-        if (networkReceiver != null) {
-            requireContext().unregisterReceiver(networkReceiver);
-        }
-    }
-    private void registerNetworkReceiver() {
-        networkReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                boolean isConnected = NetworkUtil.isNetworkAvailable(context);
-                updateNetworkStatus(isConnected);
-            }
-        };
 
-        requireContext().registerReceiver(
-                networkReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        );
     }
 
-    private void updateNetworkStatus(boolean isConnected) {
-        requireActivity().runOnUiThread(() -> {
-            if (isConnected) {
-                networkStatusContainer.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), R.color.online_status_bg));
-                ivNetworkStatus.setImageResource(R.drawable.ic_online);
-                tvNetworkStatus.setText("Online - Fresh data");
-            } else {
-                networkStatusContainer.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), R.color.offline_status_bg));
-                ivNetworkStatus.setImageResource(R.drawable.ic_offline);
-                tvNetworkStatus.setText("Offline - Showing cached data");
-            }
-            networkStatusContainer.setVisibility(View.VISIBLE);
-        });
-    }
+
+
 }
