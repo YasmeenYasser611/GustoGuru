@@ -72,7 +72,7 @@ public class PlannedFragment extends Fragment implements PlannedView {
                 MealRepository.getInstance(
                         AppDatabase.getInstance(requireContext()).favoriteMealDao(),
                         AppDatabase.getInstance(requireContext()).plannedMealDao(),
-                        MealClient.getInstance(),
+                        MealClient.getInstance(requireContext()),
                         FirebaseClient.getInstance()
                 )
         );

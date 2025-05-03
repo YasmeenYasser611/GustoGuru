@@ -175,7 +175,7 @@ public class HomeFragment extends Fragment implements HomeView,
                 MealRepository.getInstance(
                         AppDatabase.getInstance(requireContext()).favoriteMealDao(),
                         AppDatabase.getInstance(requireContext()).plannedMealDao(),
-                        MealClient.getInstance(),
+                        MealClient.getInstance(requireContext()),
                         FirebaseClient.getInstance()
                 ),
                 requireContext()

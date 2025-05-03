@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView
     }
 
     private void initDependencies() {
-        mealRepository = MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(), FirebaseClient.getInstance());
+        mealRepository = MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(this), FirebaseClient.getInstance());
         presenter = new LoginPresenter(this, mealRepository , this);
         presenter.initFacebookLogin();
     }

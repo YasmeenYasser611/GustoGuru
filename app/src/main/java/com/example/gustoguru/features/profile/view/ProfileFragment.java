@@ -48,7 +48,7 @@ public class ProfileFragment extends Fragment implements ProfileView {
         MealRepository repository = MealRepository.getInstance(
                 AppDatabase.getInstance(requireContext()).favoriteMealDao(),
                 AppDatabase.getInstance(requireContext()).plannedMealDao(),
-                MealClient.getInstance(),
+                MealClient.getInstance(requireContext()),
                 FirebaseClient.getInstance()
         );
         SessionManager sessionManager = new SessionManager(requireContext());

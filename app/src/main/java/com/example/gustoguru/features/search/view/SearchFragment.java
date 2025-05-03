@@ -303,7 +303,7 @@ public class SearchFragment extends Fragment implements SearchView {
                 MealRepository.getInstance(
                         db.favoriteMealDao(),
                         db.plannedMealDao(),
-                        MealClient.getInstance(),
+                        MealClient.getInstance(requireContext()),
                         FirebaseClient.getInstance()
                 )
         );

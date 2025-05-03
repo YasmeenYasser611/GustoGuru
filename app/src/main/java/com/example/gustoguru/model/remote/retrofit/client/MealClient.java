@@ -1,5 +1,10 @@
 package com.example.gustoguru.model.remote.retrofit.client;
 
+import static com.facebook.FacebookSdk.getCacheDir;
+
+import android.content.Context;
+
+import com.example.gustoguru.model.network.CacheInterceptor;
 import com.example.gustoguru.model.remote.retrofit.callback.AreaCallback;
 import com.example.gustoguru.model.remote.retrofit.callback.CategoryCallback;
 import com.example.gustoguru.model.remote.retrofit.callback.FilteredMealCallback;
@@ -12,32 +17,40 @@ import com.example.gustoguru.model.remote.retrofit.response.IngredientsResponse;
 import com.example.gustoguru.model.remote.retrofit.response.MealResponse;
 import com.example.gustoguru.model.remote.retrofit.service.MealService;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+import okhttp3.Interceptor;
 public class MealClient {
     private static final String TAG = "MealClient";
     private static final String BASE_URL = "https://www.themealdb.com/api/json/v1/1/";
     private static final int TIMEOUT_SECONDS = 30;
+    private static final int CACHE_SIZE = 50 * 1024 * 1024; // 50 MB
 
     private static MealClient instance;
     private final MealService mealService;
 
-    private MealClient()
-    {
+    private MealClient(Context context) {
+        // Create cache
+        File httpCacheDir = new File(context.getCacheDir(), "http-cache");
+        Cache cache = new Cache(httpCacheDir, CACHE_SIZE);
+
+        // Create OkHttpClient with proper interceptors
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .cache(cache)
+                .addInterceptor(new CacheInterceptor(context)) // Correct interceptor addition
                 .build();
 
+        // Build Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
@@ -47,21 +60,29 @@ public class MealClient {
         mealService = retrofit.create(MealService.class);
     }
 
-    public static synchronized MealClient getInstance()
-    {
+    public static synchronized MealClient getInstance(Context context) {
         if (instance == null) {
-            instance = new MealClient();
+            instance = new MealClient(context.getApplicationContext());
         }
         return instance;
     }
 
+    public MealService getService() {
+        return mealService;
+    }
+
+
+
+    private boolean isCachedResponse(Response<?> response) {
+        return response.raw().cacheResponse() != null;
+    }
+
     // Random Meal
-    public void getRandomMeal(MealCallback callback)
-    {
+    public void getRandomMeal(MealCallback callback) {
         mealService.getRandomMeal().enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getMeals());
                 } else {
                     callback.onFailure("Failed to get random meal: " + getErrorMessage(response));
@@ -80,7 +101,7 @@ public class MealClient {
         mealService.searchMealsByName(query).enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getMeals());
                 } else {
                     callback.onFailure("No meals found for: " + query);
@@ -99,7 +120,7 @@ public class MealClient {
         mealService.getMealById(mealId).enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getMeals());
                 } else {
                     callback.onFailure("Meal not found with ID: " + mealId);
@@ -113,31 +134,12 @@ public class MealClient {
         });
     }
 
-    // Filter Meals
-    public void filterByCategory(String category, FilteredMealCallback callback) {
-        mealService.filterByCategory(category).enqueue(new Callback<FilteredMealsResponse>() {
-            @Override
-            public void onResponse(Call<FilteredMealsResponse> call, Response<FilteredMealsResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
-                    callback.onSuccess(response.body().getMeals());
-                } else {
-                    callback.onFailure("No meals found in category: " + category);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<FilteredMealsResponse> call, Throwable t) {
-                callback.onFailure("Filter failed: " + t.getMessage());
-            }
-        });
-    }
-
     // Categories
     public void getAllCategories(CategoryCallback callback) {
         mealService.getAllCategories().enqueue(new Callback<CategoriesResponse>() {
             @Override
             public void onResponse(Call<CategoriesResponse> call, Response<CategoriesResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getCategories() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getCategories());
                 } else {
                     callback.onFailure("Failed to get categories");
@@ -156,7 +158,7 @@ public class MealClient {
         mealService.getAllAreas().enqueue(new Callback<AreasResponse>() {
             @Override
             public void onResponse(Call<AreasResponse> call, Response<AreasResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getAreas() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getAreas());
                 } else {
                     callback.onFailure("Failed to get areas");
@@ -175,7 +177,7 @@ public class MealClient {
         mealService.getAllIngredients().enqueue(new Callback<IngredientsResponse>() {
             @Override
             public void onResponse(Call<IngredientsResponse> call, Response<IngredientsResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getIngredients() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getIngredients());
                 } else {
                     callback.onFailure("Failed to get ingredients");
@@ -189,12 +191,30 @@ public class MealClient {
         });
     }
 
-    // In MealClient.java
+    // Filter methods
+    public void filterByCategory(String category, FilteredMealCallback callback) {
+        mealService.filterByCategory(category).enqueue(new Callback<FilteredMealsResponse>() {
+            @Override
+            public void onResponse(Call<FilteredMealsResponse> call, Response<FilteredMealsResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body().getMeals());
+                } else {
+                    callback.onFailure("No meals found in category: " + category);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FilteredMealsResponse> call, Throwable t) {
+                callback.onFailure("Filter failed: " + t.getMessage());
+            }
+        });
+    }
+
     public void filterByIngredient(String ingredient, FilteredMealCallback callback) {
         mealService.filterByIngredient(ingredient).enqueue(new Callback<FilteredMealsResponse>() {
             @Override
             public void onResponse(Call<FilteredMealsResponse> call, Response<FilteredMealsResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getMeals());
                 } else {
                     callback.onFailure("No meals found with ingredient: " + ingredient);
@@ -212,7 +232,7 @@ public class MealClient {
         mealService.filterByArea(area).enqueue(new Callback<FilteredMealsResponse>() {
             @Override
             public void onResponse(Call<FilteredMealsResponse> call, Response<FilteredMealsResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body().getMeals());
                 } else {
                     callback.onFailure("No meals found from area: " + area);
@@ -226,8 +246,6 @@ public class MealClient {
         });
     }
 
-
-    // Helper method for error messages
     private String getErrorMessage(Response<?> response) {
         if (response.errorBody() != null) {
             try {
@@ -238,4 +256,6 @@ public class MealClient {
         }
         return "Error code: " + response.code();
     }
+
+
 }

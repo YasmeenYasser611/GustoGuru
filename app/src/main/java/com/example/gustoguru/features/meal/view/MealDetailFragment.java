@@ -157,7 +157,7 @@ public class MealDetailFragment extends Fragment implements MealDetailView {
                 MealRepository.getInstance(
                         AppDatabase.getInstance(requireContext()).favoriteMealDao(),
                         AppDatabase.getInstance(requireContext()).plannedMealDao(),
-                        MealClient.getInstance(),
+                        MealClient.getInstance(requireContext()),
                         FirebaseClient.getInstance()
                 ),
                 requireContext()

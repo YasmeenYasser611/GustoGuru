@@ -54,7 +54,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
     private void initDependencies()
     {
-        mealRepository = MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(), FirebaseClient.getInstance());
+        mealRepository = MealRepository.getInstance(AppDatabase.getInstance(this).favoriteMealDao(), AppDatabase.getInstance(this).plannedMealDao(), MealClient.getInstance(this), FirebaseClient.getInstance());
         presenter = new RegistrationPresenter(this, mealRepository);
     }
 

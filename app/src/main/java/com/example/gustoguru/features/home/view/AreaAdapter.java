@@ -7,12 +7,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.gustoguru.R;
+import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Area;
 
 import java.util.List;
@@ -50,19 +54,29 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.ViewHolder> {
         Area area = areas.get(position);
         holder.textViewArea.setText(area.getStrArea());
 
-        // Load flag using CountryFlagUtils
         String flagUrl = CountryFlagUtils.getFlagUrl(area.getStrArea());
-        Glide.with(context)
-                .load(flagUrl)
-                .override(120, 80) // Consistent with CategoryAdapter
+
+        RequestOptions requestOptions = new RequestOptions()
+                .override(120, 80)
                 .centerCrop()
                 .placeholder(R.drawable.placeholder_meal)
-                .error(R.drawable.ic_close_emoji)
+                .error(R.drawable.ic_close_emoji);
+
+        if (!NetworkUtil.isNetworkAvailable(context)) {
+            requestOptions = requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        }
+
+        Glide.with(context)
+                .load(flagUrl)
+                .apply(requestOptions)
                 .into(holder.imageViewFlag);
 
         holder.layout.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onAreaClick(area);
+                if (!NetworkUtil.isNetworkAvailable(context)) {
+                    Toast.makeText(context, "Showing offline data", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

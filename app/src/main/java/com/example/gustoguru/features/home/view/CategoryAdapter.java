@@ -17,8 +17,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.gustoguru.R;
+import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Category;
 
 import java.util.ArrayList;
@@ -52,21 +54,34 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         return new ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Category category = categories.get(position);
         holder.textViewCategory.setText(category.getStrCategory());
         holder.textViewDescription.setText(category.getStrCategoryDescription());
 
-        Glide.with(context)
-                .load(category.getStrCategoryThumb())
+        RequestOptions requestOptions = new RequestOptions()
                 .override(120, 80)
                 .centerCrop()
+                .placeholder(R.drawable.placeholder_meal)
+                .error(R.drawable.ic_close_emoji);
+
+        if (!NetworkUtil.isNetworkAvailable(context)) {
+            requestOptions = requestOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
+        }
+
+        Glide.with(context)
+                .load(category.getStrCategoryThumb())
+                .apply(requestOptions)
                 .into(holder.imageViewThumb);
 
         holder.layout.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onCategoryClick(category);
+                if (!NetworkUtil.isNetworkAvailable(context)) {
+                    Toast.makeText(context, "Showing offline data", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

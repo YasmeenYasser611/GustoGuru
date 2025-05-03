@@ -76,7 +76,7 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
                 MealRepository.getInstance(
                         AppDatabase.getInstance(requireContext()).favoriteMealDao(),
                         AppDatabase.getInstance(requireContext()).plannedMealDao(),
-                        MealClient.getInstance(),
+                        MealClient.getInstance(requireContext()),
                         FirebaseClient.getInstance()
                 )
         );
