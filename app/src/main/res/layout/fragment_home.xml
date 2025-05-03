@@ -5,10 +5,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/soft_peach">
 
+    <!-- Network Status Indicator -->
+    <LinearLayout
+        android:id="@+id/networkStatusContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/offline_status_bg"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/ivNetworkStatus"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_offline" />
+
+        <TextView
+            android:id="@+id/tvNetworkStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Offline - Showing cached data"
+            android:textColor="@color/offline_status_text" />
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
+
 
         <LinearLayout
             android:layout_width="match_parent"

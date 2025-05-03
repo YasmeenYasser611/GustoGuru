@@ -60,4 +60,8 @@
     <color name="light_purple">#D1C4E9</color>
     <color name="light_gray">#F5F5F5</color>
 
+    <color name="offline_status_bg">#FFF44336</color>
+    <color name="offline_status_text">#FFFFFF</color>
+    <color name="online_status_bg">#FF4CAF50</color>
+
 </resources>

@@ -1,17 +1,23 @@
 package com.example.gustoguru.features.home.view;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +29,7 @@ import com.example.gustoguru.features.meal.view.MealAdapter;
 import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.sessionmanager.SessionManager;
 import com.example.gustoguru.model.local.AppDatabase;
+import com.example.gustoguru.model.network.NetworkUtil;
 import com.example.gustoguru.model.pojo.Area;
 import com.example.gustoguru.model.pojo.Category;
 import com.example.gustoguru.model.pojo.FilteredMeal;
@@ -73,6 +80,10 @@ public class HomeFragment extends Fragment implements HomeView,
     private HomePresenter presenter;
     private SessionManager sessionManager;
     private HomeCommunicator communicator;
+    private LinearLayout networkStatusContainer;
+    private ImageView ivNetworkStatus;
+    private TextView tvNetworkStatus;
+    private BroadcastReceiver networkReceiver;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -95,6 +106,8 @@ public class HomeFragment extends Fragment implements HomeView,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
+        updateNetworkStatus(NetworkUtil.isNetworkAvailable(requireContext()));
+        registerNetworkReceiver();
         setupAdapters();
         setupRecyclerViews();
         initializePresenter();
@@ -122,6 +135,9 @@ public class HomeFragment extends Fragment implements HomeView,
         mealsByIngredientContainer = view.findViewById(R.id.mealsByIngredientContainer);
         tvIngredientsTitle = view.findViewById(R.id.tvIngredientsTitle);
         tvMealsByIngredientTitle = view.findViewById(R.id.tvMealsByIngredientTitle);
+        networkStatusContainer = view.findViewById(R.id.networkStatusContainer);
+        ivNetworkStatus = view.findViewById(R.id.ivNetworkStatus);
+        tvNetworkStatus = view.findViewById(R.id.tvNetworkStatus);
     }
 
     private void setupAdapters() {
@@ -260,6 +276,7 @@ public class HomeFragment extends Fragment implements HomeView,
     @Override
     public void showCategories(List<Category> categories) {
         categoryAdapter.setCategories(categories);
+
     }
 
     @Override
@@ -325,5 +342,39 @@ public class HomeFragment extends Fragment implements HomeView,
     public void onDestroyView() {
         super.onDestroyView();
         presenter.onDestroy();
+        if (networkReceiver != null) {
+            requireContext().unregisterReceiver(networkReceiver);
+        }
+    }
+    private void registerNetworkReceiver() {
+        networkReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isConnected = NetworkUtil.isNetworkAvailable(context);
+                updateNetworkStatus(isConnected);
+            }
+        };
+
+        requireContext().registerReceiver(
+                networkReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        );
+    }
+
+    private void updateNetworkStatus(boolean isConnected) {
+        requireActivity().runOnUiThread(() -> {
+            if (isConnected) {
+                networkStatusContainer.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.online_status_bg));
+                ivNetworkStatus.setImageResource(R.drawable.ic_online);
+                tvNetworkStatus.setText("Online - Fresh data");
+            } else {
+                networkStatusContainer.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.offline_status_bg));
+                ivNetworkStatus.setImageResource(R.drawable.ic_offline);
+                tvNetworkStatus.setText("Offline - Showing cached data");
+            }
+            networkStatusContainer.setVisibility(View.VISIBLE);
+        });
     }
 }
