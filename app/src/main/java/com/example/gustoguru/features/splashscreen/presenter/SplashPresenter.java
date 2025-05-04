@@ -29,6 +29,7 @@ public class SplashPresenter {
 
     private void setupAnimationListener() {
         LottieAnimationView animationView = view.getAnimationView();
+        animationView.setSpeed(2f);
         if (animationView != null) {
             animationView.addAnimatorListener(new AnimatorListenerAdapter() {
                 @Override

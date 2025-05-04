@@ -44,6 +44,7 @@ public class SplashActivity extends AppCompatActivity implements Splashview {
     @Override
     public void navigateToLogin() {
         try {
+
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         } catch (Exception e) {

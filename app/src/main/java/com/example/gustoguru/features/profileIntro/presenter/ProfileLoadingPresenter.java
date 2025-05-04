@@ -21,6 +21,7 @@ public class ProfileLoadingPresenter {
 
     public void initialize() {
         this.startTime = System.currentTimeMillis();
+
         setupAnimationListener();
     }
 
