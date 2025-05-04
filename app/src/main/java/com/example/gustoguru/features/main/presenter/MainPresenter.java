@@ -35,7 +35,13 @@ public class MainPresenter  {
             view.replaceFragment(new SearchFragment(), true);
         }
         else if (menuItemId == R.id.nav_planner) {
-            handleProtectedNavigation(new PlannedFragment(), "Please login to view planned meals");
+
+            if (isUserLoggedIn())
+            {
+                view.navigateToPlanner();
+            } else {
+                view.showAlertDialog("Login Required", "Please login to view planned meals");
+            }
         }
         else if (menuItemId == R.id.nav_fav) {
             handleProtectedNavigation(new FavoritesFragment(), "Please login to view favorites");

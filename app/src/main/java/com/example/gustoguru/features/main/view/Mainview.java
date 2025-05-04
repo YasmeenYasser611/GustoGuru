@@ -10,4 +10,5 @@ public interface Mainview {
     void updateBottomNavigation(int itemId);
     void setupFragmentAnimations(FragmentTransaction transaction);
     void navigateToProfile();
+    void navigateToPlanner();
 }

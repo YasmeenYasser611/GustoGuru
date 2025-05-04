@@ -23,6 +23,7 @@ import com.example.gustoguru.features.navigation.view.NavigationFragment;
 import com.example.gustoguru.features.profile.view.ProfileFragment;
 import com.example.gustoguru.features.profileIntro.view.ProfileLoadingFragment;
 import com.example.gustoguru.features.search.view.SearchFragment;
+import com.example.gustoguru.features.weekly_planner_intro.view.WeeklyLoadingFragment;
 import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
 public class MainActivity extends AppCompatActivity implements
@@ -171,6 +172,17 @@ public class MainActivity extends AppCompatActivity implements
         if (presenter != null && presenter.isUserLoggedIn()) {
             // Create new instance of loading fragment
             ProfileLoadingFragment loadingFragment = new ProfileLoadingFragment();
+            // Replace current fragment and add to back stack
+            replaceFragment(loadingFragment, true);
+        } else {
+            presenter.handleNavigation(R.id.nav_planner);
+        }
+    }
+    @Override
+    public void navigateToPlanner() {
+        if (presenter != null && presenter.isUserLoggedIn()) {
+            // Create new instance of loading fragment
+            WeeklyLoadingFragment loadingFragment = new WeeklyLoadingFragment();
             // Replace current fragment and add to back stack
             replaceFragment(loadingFragment, true);
         } else {
