@@ -9,4 +9,5 @@ public interface Mainview {
     void showAlertDialog(String title, String message);
     void updateBottomNavigation(int itemId);
     void setupFragmentAnimations(FragmentTransaction transaction);
+    void navigateToProfile();
 }

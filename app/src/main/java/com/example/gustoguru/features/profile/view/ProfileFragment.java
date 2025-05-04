@@ -85,7 +85,6 @@ public class ProfileFragment extends Fragment implements ProfileView {
                 getActivity().onBackPressed();
             }
         });
-
         view.findViewById(R.id.edit_name_button).setOnClickListener(v -> {
             String currentName = userNameText.getText().toString();
             showEditNameDialog(currentName);
@@ -178,6 +177,7 @@ public class ProfileFragment extends Fragment implements ProfileView {
         }
         presenter.detachView();
     }
+
 
 
 }

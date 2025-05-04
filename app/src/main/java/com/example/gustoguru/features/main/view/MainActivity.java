@@ -21,6 +21,7 @@ import com.example.gustoguru.features.main.presenter.MainPresenter;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.navigation.view.NavigationFragment;
 import com.example.gustoguru.features.profile.view.ProfileFragment;
+import com.example.gustoguru.features.profileIntro.view.ProfileLoadingFragment;
 import com.example.gustoguru.features.search.view.SearchFragment;
 import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
@@ -55,7 +56,14 @@ public class MainActivity extends AppCompatActivity implements
                     .add(R.id.bottom_nav_container, navigationFragment, "NAV_FRAGMENT")
                     .commit();
 
-            replaceFragment(new HomeFragment(), false);
+            // Check if user is logged in and trying to access profile
+            if (sessionManager.isLoggedIn() &&
+                    getIntent() != null &&
+                    getIntent().hasExtra("navigate_to_profile")) {
+                showProfileLoadingAnimation();
+            } else {
+                replaceFragment(new HomeFragment(), false);
+            }
         } else {
             navigationFragment = (NavigationFragment) fragmentManager.findFragmentByTag("NAV_FRAGMENT");
         }
@@ -63,7 +71,12 @@ public class MainActivity extends AppCompatActivity implements
         setupBackStackListener();
     }
 
+    private void showProfileLoadingAnimation() {
+        replaceFragment(new ProfileLoadingFragment(), false);
+    }
+
     // Implement MainContract.View methods
+
     @Override
     public void replaceFragment(Fragment fragment, boolean addToBackStack) {
         try {
@@ -79,6 +92,11 @@ public class MainActivity extends AppCompatActivity implements
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             setupFragmentAnimations(transaction);
+
+            // Clear back stack when navigating to home to avoid building up too many fragments
+            if (fragment instanceof HomeFragment && fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
 
             transaction.replace(R.id.fragment_container, fragment, fragment.getClass().getSimpleName());
 
@@ -147,9 +165,17 @@ public class MainActivity extends AppCompatActivity implements
         presenter.handleNavigation(R.id.nav_fav);
     }
 
+
     @Override
     public void navigateToProfile() {
-        presenter.handleNavigation(R.id.nav_profile);
+        if (presenter != null && presenter.isUserLoggedIn()) {
+            // Create new instance of loading fragment
+            ProfileLoadingFragment loadingFragment = new ProfileLoadingFragment();
+            // Replace current fragment and add to back stack
+            replaceFragment(loadingFragment, true);
+        } else {
+            presenter.handleNavigation(R.id.nav_profile);
+        }
     }
 
     @Override
@@ -190,7 +216,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() > 0) {
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
+
+        if (currentFragment instanceof ProfileFragment) {
+            // Let the system handle back navigation normally
+            super.onBackPressed();
+        } else if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
             super.onBackPressed();

@@ -41,13 +41,19 @@ public class MainPresenter  {
             handleProtectedNavigation(new FavoritesFragment(), "Please login to view favorites");
         }
         else if (menuItemId == R.id.nav_profile) {
-            handleProtectedNavigation(new ProfileFragment(), "Please login to view profile");
+            if (isUserLoggedIn())
+            {
+            view.navigateToProfile();
+            } else {
+                view.showAlertDialog("Login Required", "Please login to view profile");
+            }
         }
     }
 
     private void handleProtectedNavigation(Fragment fragment, String message) {
         if (isUserLoggedIn()) {
             view.replaceFragment(fragment, true);
+//            view.navigateToProfile();
         } else {
             view.showAlertDialog("Login Required", message);
         }
