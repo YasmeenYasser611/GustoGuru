@@ -11,4 +11,6 @@ public interface Mainview {
     void setupFragmentAnimations(FragmentTransaction transaction);
     void navigateToProfile();
     void navigateToPlanner();
+    void navigateToFav();
+    void navigateToSearch();
 }

@@ -1,4 +1,4 @@
-package com.example.gustoguru.features.profileIntro.view;
+package com.example.gustoguru.features.favorites_intro.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -15,19 +15,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.example.gustoguru.R;
+import com.example.gustoguru.features.favorites.view.FavoritesFragment;
+import com.example.gustoguru.features.favorites_intro.presenter.FavLoadingPresenter;
 import com.example.gustoguru.features.main.view.MainActivity;
-import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
-import com.example.gustoguru.features.profile.view.ProfileFragment;
-import com.example.gustoguru.features.profileIntro.presenter.ProfileLoadingPresenter;
-import com.example.gustoguru.model.sessionmanager.SessionManager;
+import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
+import com.example.gustoguru.features.weekly_planner_intro.presenter.WeeklyLoadingPresenter;
 
 import javax.annotation.Nullable;
-public class ProfileLoadingFragment extends Fragment implements ProfileLoadingView {
+public class FavLoadingFragment extends Fragment implements FavLoadingView {
 
-
-    private ProfileLoadingPresenter presenter;
+    private FavLoadingPresenter presenter;
     private LottieAnimationView animationView;
     private boolean hasNavigated = false;
     private boolean shouldSkipAnimation = false;
@@ -35,33 +33,36 @@ public class ProfileLoadingFragment extends Fragment implements ProfileLoadingVi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Check if we're coming from back navigation
         if (getArguments() != null) {
             shouldSkipAnimation = getArguments().getBoolean("skip_animation", false);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_profile_intro, container, false);
+        return inflater.inflate(R.layout.fragment_fav_loading, container, false);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (shouldSkipAnimation) {
-            navigateToProfile();
+            navigateToFavorites();
             return;
         }
 
-        animationView = view.findViewById(R.id.profile_loading_animation);
+        animationView = view.findViewById(R.id.fav_loading_animation);
         try {
-            animationView.setAnimation("profile.json");
+            // Set your favorites loading animation JSON file
+            animationView.setAnimation("fav.json");
             animationView.setRepeatCount(0);
             animationView.setSpeed(2.5f);
             animationView.loop(false);
 
-            presenter = new ProfileLoadingPresenter(this);
+            presenter = new FavLoadingPresenter(this);
+            presenter.initialize();
 
             animationView.addAnimatorListener(new AnimatorListenerAdapter() {
                 @Override
@@ -75,22 +76,20 @@ public class ProfileLoadingFragment extends Fragment implements ProfileLoadingVi
             animationView.playAnimation();
         } catch (Exception e) {
             showError("Animation setup failed: " + e.getMessage());
-            navigateToProfile();
+            navigateToFavorites();
         }
     }
 
-
     @Override
-    public void navigateToProfile() {
+    public void navigateToFavorites() {
         if (hasNavigated || !isAdded() || isDetached() || getActivity() == null) {
             return;
         }
         hasNavigated = true;
 
-        // Ensure this runs on the main thread and when the activity is ready
         new Handler(Looper.getMainLooper()).post(() -> {
             if (getActivity() != null && !getActivity().isFinishing() && !getActivity().isDestroyed()) {
-                ((MainActivity) getActivity()).replaceFragment(new ProfileFragment(), false);
+                ((MainActivity) getActivity()).replaceFragment(new FavoritesFragment(), false);
             }
         });
     }
@@ -100,11 +99,9 @@ public class ProfileLoadingFragment extends Fragment implements ProfileLoadingVi
         return animationView;
     }
 
-
-
     @Override
     public void showError(String message) {
-        Log.e("ProfileLoading", message);
+        Log.e("FavLoading", message);
         if (getActivity() != null) {
             getActivity().onBackPressed();
         }
@@ -122,6 +119,5 @@ public class ProfileLoadingFragment extends Fragment implements ProfileLoadingVi
         }
         super.onDestroyView();
     }
-
 
 }

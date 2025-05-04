@@ -205,4 +205,5 @@ public class PlannedFragment extends Fragment implements PlannedView {
         super.onDestroyView();
         presenter.detachView();
     }
+
 }

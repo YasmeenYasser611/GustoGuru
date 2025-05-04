@@ -3,7 +3,10 @@ package com.example.gustoguru.features.main.view;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -11,21 +14,24 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.gustoguru.R;
-//import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.NetworkStatus.view.NetworkStatusFragment;
 import com.example.gustoguru.features.authentication.login.view.LoginActivity;
 import com.example.gustoguru.features.favorites.view.FavoritesFragment;
+import com.example.gustoguru.features.favorites_intro.view.FavLoadingFragment;
 import com.example.gustoguru.features.home.view.HomeCommunicator;
 import com.example.gustoguru.features.home.view.HomeFragment;
 import com.example.gustoguru.features.main.presenter.MainPresenter;
+import com.example.gustoguru.features.meal.view.MealDetailFragment;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.navigation.view.NavigationFragment;
 import com.example.gustoguru.features.profile.view.ProfileFragment;
 import com.example.gustoguru.features.profileIntro.view.ProfileLoadingFragment;
 import com.example.gustoguru.features.search.view.SearchFragment;
+import com.example.gustoguru.features.search_intro.view.SearchLoadingFragment;
 import com.example.gustoguru.features.weekly_planner_intro.view.WeeklyLoadingFragment;
 import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
+
 public class MainActivity extends AppCompatActivity implements
         Mainview,
         NavigationCommunicator,
@@ -147,7 +153,15 @@ public class MainActivity extends AppCompatActivity implements
     // Implement NavigationCommunicator methods
     @Override
     public void navigateToSearch() {
-        presenter.handleNavigation(R.id.nav_search);
+        if (presenter != null && presenter.isUserLoggedIn()) {
+            // Create new instance of loading fragment
+            SearchLoadingFragment loadingFragment = new SearchLoadingFragment();
+            // Replace current fragment and add to back stack
+            replaceFragment(loadingFragment, true);
+        } else {
+            presenter.handleNavigation(R.id.nav_search);
+        }
+
     }
 
     @Override
@@ -175,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements
             // Replace current fragment and add to back stack
             replaceFragment(loadingFragment, true);
         } else {
-            presenter.handleNavigation(R.id.nav_planner);
+            presenter.handleNavigation(R.id.nav_profile);
         }
     }
     @Override
@@ -186,7 +200,18 @@ public class MainActivity extends AppCompatActivity implements
             // Replace current fragment and add to back stack
             replaceFragment(loadingFragment, true);
         } else {
-            presenter.handleNavigation(R.id.nav_profile);
+            presenter.handleNavigation(R.id.nav_planner);
+        }
+    }
+    @Override
+    public void navigateToFav() {
+        if (presenter != null && presenter.isUserLoggedIn()) {
+            // Create new instance of loading fragment
+            FavLoadingFragment loadingFragment = new FavLoadingFragment();
+            // Replace current fragment and add to back stack
+            replaceFragment(loadingFragment, true);
+        } else {
+            presenter.handleNavigation(R.id.nav_fav);
         }
     }
 
