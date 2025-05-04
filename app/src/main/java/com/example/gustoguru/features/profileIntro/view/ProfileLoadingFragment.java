@@ -57,7 +57,7 @@ public class ProfileLoadingFragment extends Fragment implements ProfileLoadingVi
         try {
             animationView.setAnimation("profile.json");
             animationView.setRepeatCount(0);
-            animationView.setSpeed(1f);
+            animationView.setSpeed(2.5f);
             animationView.loop(false);
 
             presenter = new ProfileLoadingPresenter(this);

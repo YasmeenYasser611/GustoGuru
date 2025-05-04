@@ -9,8 +9,8 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.example.gustoguru.features.profileIntro.view.ProfileLoadingFragment;
 import com.example.gustoguru.features.profileIntro.view.ProfileLoadingView;
 public class ProfileLoadingPresenter {
-    private static final long MIN_LOADING_DURATION = 1500;
-    private static final long MAX_LOADING_DURATION = 3000;
+    private static final long MIN_LOADING_DURATION = 500;
+    private static final long MAX_LOADING_DURATION = 1000;
     private long startTime;
     private ProfileLoadingView view;
     private Handler handler = new Handler(Looper.getMainLooper());

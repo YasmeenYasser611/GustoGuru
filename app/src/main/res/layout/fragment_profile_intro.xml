@@ -1,16 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/soft_peach">
+    android:background="@color/soft_peach"
+    android:padding="24dp">
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/profile_loading_animation"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
+
+
+    <!-- Top Welcome Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Welcome Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome Back Chef!👩‍🍳"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <!-- Slogin -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/slogin"
+            android:textColor="@android:color/holo_purple"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:fontFamily="cursive"
+            android:gravity="center"/>
+
+        <!-- Lottie Animation (Moved Here) -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/profile_loading_animation"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="20dp"
         app:lottie_autoPlay="false"
         app:lottie_loop="false" />
+
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Loading Text -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preparing your kitchen..."
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <!-- Purple Progress Bar (Matches Button Colors) -->
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateTint="@android:color/holo_purple"/>
+
+
+    </LinearLayout>
 
 </FrameLayout>
