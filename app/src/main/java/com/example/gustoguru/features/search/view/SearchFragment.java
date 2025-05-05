@@ -1,13 +1,17 @@
 package com.example.gustoguru.features.search.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
 import com.example.gustoguru.features.search.presenter.SearchPresenter;
@@ -34,14 +39,19 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SearchFragment extends Fragment implements SearchView {
-    // Views
+    // Content Views
     private RecyclerView searchResultsRecyclerView;
     private ProgressBar progressBar;
     private TextInputEditText searchEditText;
     private RecyclerView suggestionsRecyclerView;
     private MaterialButton btnSearchByName, btnSearchByIngredient, btnSearchByCategory, btnSearchByCountry;
+
+    // Animation Views
+    private LottieAnimationView animationView;
+    private TextView welcomeText;
+    private TextView loadingMessage;
+    private ViewGroup animationContainer;
 
     // Adapters
     private SearchAdapter adapter;
@@ -50,6 +60,16 @@ public class SearchFragment extends Fragment implements SearchView {
     // Presenter
     private SearchPresenter presenter;
     private String currentSearchMethod = "Name";
+    private boolean shouldSkipAnimation = false;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            shouldSkipAnimation = getArguments().getBoolean("skip_animation", false);
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,40 +80,75 @@ public class SearchFragment extends Fragment implements SearchView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initializeViews(view);
-        setupRecyclerViews();
-        initializePresenter(); // Initialize presenter FIRST
-        setupSearchFunctionality(); // Then setup functionality that uses presenter
-    }
-    private void initializeViews(View view) {
+        // Initialize animation views
+        animationContainer = view.findViewById(R.id.animation_container);
+        animationView = view.findViewById(R.id.search_loading_animation);
+        welcomeText = view.findViewById(R.id.welcome_text);
+        loadingMessage = view.findViewById(R.id.loading_message);
+
+        // Initialize content views
         searchResultsRecyclerView = view.findViewById(R.id.searchResultsRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
         searchEditText = view.findViewById(R.id.searchEditText);
         suggestionsRecyclerView = view.findViewById(R.id.suggestionsRecyclerView);
-
         btnSearchByName = view.findViewById(R.id.btnSearchByName);
         btnSearchByIngredient = view.findViewById(R.id.btnSearchByIngredient);
         btnSearchByCategory = view.findViewById(R.id.btnSearchByCategory);
         btnSearchByCountry = view.findViewById(R.id.btnSearchByCountry);
-    }
-    private void initializePresenter() {
-        AppDatabase db = AppDatabase.getInstance(requireContext());
-        presenter = new SearchPresenter(
-                this,
-                MealRepository.getInstance(
-                        db.favoriteMealDao(),
-                        db.plannedMealDao(),
-                        MealClient.getInstance(requireContext()),
-                        FirebaseClient.getInstance()
-                )
-        );
 
-        // Load initial data
-        presenter.loadCategories();
-        presenter.loadIngredients();
-        presenter.loadAreas();
+        if (shouldSkipAnimation) {
+            showContentViews();
+            initializeSearchComponents();
+        } else {
+            startLoadingAnimation();
+        }
     }
 
+    private void startLoadingAnimation() {
+        try {
+            animationView.setAnimation("search.json");
+            animationView.setRepeatCount(0);
+            animationView.setSpeed(1.5f);
+            animationView.loop(false);
+
+            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    showContentViews();
+                    initializeSearchComponents();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    showContentViews();
+                    initializeSearchComponents();
+                }
+            });
+
+            animationView.playAnimation();
+        } catch (Exception e) {
+            Log.e("SearchFragment", "Animation setup failed", e);
+            showContentViews();
+            initializeSearchComponents();
+        }
+    }
+
+    private void showContentViews() {
+        // Hide animation views
+        animationContainer.setVisibility(View.GONE);
+
+        // Show content views
+        View contentView = getView().findViewById(R.id.content_view);
+        if (contentView != null) {
+            contentView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void initializeSearchComponents() {
+        setupRecyclerViews();
+        initializePresenter();
+        setupSearchFunctionality();
+    }
 
     private void setupRecyclerViews() {
         // Search results
@@ -118,11 +173,27 @@ public class SearchFragment extends Fragment implements SearchView {
         }
     }
 
+    private void initializePresenter() {
+        AppDatabase db = AppDatabase.getInstance(requireContext());
+        presenter = new SearchPresenter(
+                this,
+                MealRepository.getInstance(
+                        db.favoriteMealDao(),
+                        db.plannedMealDao(),
+                        MealClient.getInstance(requireContext()),
+                        FirebaseClient.getInstance()
+                )
+        );
+
+        // Load initial data
+        presenter.loadCategories();
+        presenter.loadIngredients();
+        presenter.loadAreas();
+    }
+
     private void setupSearchFunctionality() {
         setupSearchMethodButtons();
         setupSearchTextListener();
-
-        // Set initial search method after presenter is initialized
         setSearchMethod(currentSearchMethod);
     }
 
@@ -137,13 +208,8 @@ public class SearchFragment extends Fragment implements SearchView {
         currentSearchMethod = method;
         updateButtonStates();
         searchEditText.setHint("Search by " + method.toLowerCase() + "...");
-
-        // Only filter suggestions if presenter is initialized
-        if (presenter != null) {
-            filterSuggestions(searchEditText.getText().toString());
-        }
+        filterSuggestions(searchEditText.getText().toString());
     }
-
 
     private void updateButtonStates() {
         int selectedColor = ContextCompat.getColor(requireContext(), R.color.gray);
@@ -159,15 +225,13 @@ public class SearchFragment extends Fragment implements SearchView {
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (presenter != null) {
-                    filterSuggestions(s.toString());
-                }
+                filterSuggestions(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
 
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH && presenter != null) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch();
                 return true;
             }
@@ -185,8 +249,6 @@ public class SearchFragment extends Fragment implements SearchView {
     private void filterSuggestions(String query) {
         presenter.filterSuggestions(query, currentSearchMethod);
     }
-
-
 
     // SearchView implementation
     @Override
@@ -251,9 +313,13 @@ public class SearchFragment extends Fragment implements SearchView {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        if (animationView != null) {
+            animationView.cancelAnimation();
+            animationView.removeAllAnimatorListeners();
+        }
         if (presenter != null) {
             presenter.detachView();
         }
+        super.onDestroyView();
     }
 }

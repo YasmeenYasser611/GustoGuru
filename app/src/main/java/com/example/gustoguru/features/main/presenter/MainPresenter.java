@@ -13,7 +13,7 @@ import com.example.gustoguru.model.sessionmanager.SessionManager;
 import com.example.gustoguru.features.weekly_planner.view.PlannedFragment;
 
 public class MainPresenter  {
-    private Mainview view;
+    private final Mainview view;
     private final SessionManager sessionManager;
 
     public MainPresenter(Mainview view, SessionManager sessionManager) {
@@ -32,37 +32,26 @@ public class MainPresenter  {
             view.replaceFragment(new HomeFragment(), false);
         }
         else if (menuItemId == R.id.nav_search) {
-            view.navigateToSearch();
+            view.replaceFragment(new SearchFragment(), true);
         }
         else if (menuItemId == R.id.nav_planner) {
-
-            if (isUserLoggedIn())
-            {
-                view.navigateToPlanner();
-            } else {
-                view.showAlertDialog("Login Required", "Please login to view planned meals");
-            }
+            handleProtectedNavigation(new PlannedFragment(), "Please login to view planned meals");
         }
-        else if (menuItemId == R.id.nav_fav)
-        {
-            if (isUserLoggedIn())
-            {
-                view.navigateToFav();
-            } else {
-                view.showAlertDialog("Login Required", "Please login to view favorites");
-            }
+        else if (menuItemId == R.id.nav_fav) {
+            handleProtectedNavigation(new FavoritesFragment(), "Please login to view favorites");
         }
         else if (menuItemId == R.id.nav_profile) {
-            if (isUserLoggedIn())
-            {
-            view.navigateToProfile();
-            } else {
-                view.showAlertDialog("Login Required", "Please login to view profile");
-            }
+            handleProtectedNavigation(new ProfileFragment(), "Please login to view profile");
         }
     }
 
-
+    private void handleProtectedNavigation(Fragment fragment, String message) {
+        if (isUserLoggedIn()) {
+            view.replaceFragment(fragment, true);
+        } else {
+            view.showAlertDialog("Login Required", message);
+        }
+    }
 
 
     public void navigateToMealDetail(String mealId) {
@@ -72,9 +61,5 @@ public class MainPresenter  {
 
     public void checkBackStack() {
         // Logic would be implemented here if needed
-    }
-    public void onDestroy() {
-
-        view = null;
     }
 }

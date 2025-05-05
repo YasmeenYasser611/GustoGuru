@@ -1,12 +1,18 @@
 package com.example.gustoguru.features.weekly_planner.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.airbnb.lottie.LottieAnimationView;
 import com.applandeo.materialcalendarview.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
 public class PlannedFragment extends Fragment implements PlannedView {
     private PlannedPresenter presenter;
     private CalendarView calendarView;
@@ -39,6 +44,20 @@ public class PlannedFragment extends Fragment implements PlannedView {
     private ProgressBar progressBar;
     private DailyMealsAdapter dailyMealsAdapter;
 
+    // Animation views
+    private LottieAnimationView animationView;
+    private TextView welcomeText;
+    private TextView loadingMessage;
+    private ViewGroup animationContainer;
+    private boolean shouldSkipAnimation = false;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            shouldSkipAnimation = getArguments().getBoolean("skip_animation", false);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,13 +69,18 @@ public class PlannedFragment extends Fragment implements PlannedView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize views
+        // Initialize animation views
+        animationContainer = view.findViewById(R.id.animation_container);
+        animationView = view.findViewById(R.id.weekly_loading_animation);
+        welcomeText = view.findViewById(R.id.welcome_text);
+        loadingMessage = view.findViewById(R.id.loading_message);
+
+        // Initialize content views
         calendarView = view.findViewById(R.id.calendarView);
         rvDailyMeals = view.findViewById(R.id.rv_daily_meals);
         tvSelectedDate = view.findViewById(R.id.tvSelectedDate);
         tvEmpty = view.findViewById(R.id.tv_empty);
         progressBar = view.findViewById(R.id.progressBar);
-
 
         // Setup RecyclerView
         dailyMealsAdapter = new DailyMealsAdapter(new ArrayList<>(), this::onMealClick, this::onRemoveClick);
@@ -74,6 +98,54 @@ public class PlannedFragment extends Fragment implements PlannedView {
                 )
         );
 
+        if (shouldSkipAnimation) {
+            showContentViews();
+            initializePlanner();
+        } else {
+            startLoadingAnimation();
+        }
+    }
+
+    private void startLoadingAnimation() {
+        try {
+            animationView.setAnimation("weekly_planner.json");
+            animationView.setRepeatCount(0);
+            animationView.setSpeed(1.5f);
+            animationView.loop(false);
+
+            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    showContentViews();
+                    initializePlanner();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    showContentViews();
+                    initializePlanner();
+                }
+            });
+
+            animationView.playAnimation();
+        } catch (Exception e) {
+            Log.e("PlannedFragment", "Animation setup failed", e);
+            showContentViews();
+            initializePlanner();
+        }
+    }
+
+    private void showContentViews() {
+        // Get reference to content view
+        View contentView = getView().findViewById(R.id.content_view);
+
+        // Hide animation views
+        animationContainer.setVisibility(View.GONE);
+
+        // Show content views
+        contentView.setVisibility(View.VISIBLE);
+    }
+    private void initializePlanner() {
         // Set current date
         Calendar today = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -88,7 +160,6 @@ public class PlannedFragment extends Fragment implements PlannedView {
             updateDateHeader(clickedDate);
             presenter.loadPlannedMealsForDate(dateStr);
         });
-
     }
 
     private void updateDateHeader(Calendar date) {
@@ -106,9 +177,6 @@ public class PlannedFragment extends Fragment implements PlannedView {
         presenter.removePlannedMeal(meal, position);
     }
 
-
-
-    // Implement PlannedView methods
     @Override
     public void showPlannedMeals(List<Meal> meals) {
         requireActivity().runOnUiThread(() -> {
@@ -130,7 +198,8 @@ public class PlannedFragment extends Fragment implements PlannedView {
 
     @Override
     public void showError(String message) {
-
+        requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -189,7 +258,6 @@ public class PlannedFragment extends Fragment implements PlannedView {
                 @Override
                 public void onDismissed(Snackbar transientBottomBar, int event) {
                     if (event != DISMISS_EVENT_ACTION && isAdded() && !requireActivity().isFinishing()) {
-                        // Reload data if snackbar dismissed without undo
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                         presenter.loadPlannedMealsForDate(sdf.format(Calendar.getInstance().getTime()));
                     }
@@ -202,8 +270,13 @@ public class PlannedFragment extends Fragment implements PlannedView {
 
     @Override
     public void onDestroyView() {
+        if (animationView != null) {
+            animationView.cancelAnimation();
+            animationView.removeAllAnimatorListeners();
+        }
+        if (presenter != null) {
+            presenter.detachView();
+        }
         super.onDestroyView();
-        presenter.detachView();
     }
-
 }

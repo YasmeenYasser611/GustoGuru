@@ -1,6 +1,9 @@
 package com.example.gustoguru.features.favorites.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.gustoguru.R;
 import com.example.gustoguru.features.favorites.presenter.FavoritesPresenter;
 import com.example.gustoguru.features.navigation.view.NavigationCommunicator;
@@ -27,7 +31,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class FavoritesFragment extends Fragment implements FavoritesView {
     private FavoritesPresenter presenter;
     private RecyclerView recyclerView;
@@ -35,8 +38,23 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
     private ProgressBar progressBar;
     private TextView tvEmpty;
 
+    // Animation views
+    private LottieAnimationView animationView;
+    private TextView welcomeText;
+    private TextView loadingMessage;
+    private ViewGroup animationContainer;
+    private boolean shouldSkipAnimation = false;
+
     public FavoritesFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            shouldSkipAnimation = getArguments().getBoolean("skip_animation", false);
+        }
     }
 
     @Override
@@ -46,23 +64,16 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (presenter != null) {
-            presenter.detachView();
-        }
-    }
-
-    @Override
-    public boolean isActive() {
-        return isAdded() && !isDetached() && getActivity() != null;
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Initialize animation views
+        animationContainer = view.findViewById(R.id.animation_container);
+        animationView = view.findViewById(R.id.fav_loading_animation);
+        welcomeText = view.findViewById(R.id.welcome_text);
+        loadingMessage = view.findViewById(R.id.loading_message);
 
+        // Initialize content views
         progressBar = view.findViewById(R.id.progressBar);
         tvEmpty = view.findViewById(R.id.tv_empty);
         recyclerView = view.findViewById(R.id.rv_favorites);
@@ -81,7 +92,66 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
                 )
         );
 
-        presenter.loadFavorites();
+        if (shouldSkipAnimation) {
+            showContentViews();
+            presenter.loadFavorites();
+        } else {
+            startLoadingAnimation();
+        }
+    }
+
+    private void startLoadingAnimation() {
+        try {
+            animationView.setAnimation("fav.json");
+            animationView.setRepeatCount(0);
+            animationView.setSpeed(2.5f);
+            animationView.loop(false);
+
+            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    showContentViews();
+                    presenter.loadFavorites();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    showContentViews();
+                    presenter.loadFavorites();
+                }
+            });
+
+            animationView.playAnimation();
+        } catch (Exception e) {
+            Log.e("FavoritesFragment", "Animation setup failed", e);
+            showContentViews();
+            presenter.loadFavorites();
+        }
+    }
+
+    private void showContentViews() {
+        // Hide animation views
+        animationContainer.setVisibility(View.GONE);
+
+        // Show content views
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (animationView != null) {
+            animationView.cancelAnimation();
+            animationView.removeAllAnimatorListeners();
+        }
+        if (presenter != null) {
+            presenter.detachView();
+        }
+        super.onDestroyView();
+    }
+
+    @Override
+    public boolean isActive() {
+        return isAdded() && !isDetached() && getActivity() != null;
     }
 
     private void onMealClick(Meal meal) {
@@ -164,6 +234,4 @@ public class FavoritesFragment extends Fragment implements FavoritesView {
             tvEmpty.setVisibility(View.GONE);
         });
     }
-
-
 }

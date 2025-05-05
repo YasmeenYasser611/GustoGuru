@@ -188,7 +188,9 @@ public class SearchPresenter {
         repository.getAllCategories(new CategoryCallback() {
             @Override
             public void onSuccess(List<Category> categories) {
-                view.showCategories(categories);
+                if (view != null) {
+                    view.showCategories(categories);
+                }
             }
             @Override
             public void onFailure(String message) {
@@ -201,7 +203,9 @@ public class SearchPresenter {
         repository.getAllIngredients(new IngredientCallback() {
             @Override
             public void onSuccess(List<Ingredient> ingredients) {
-                view.showIngredients(ingredients);
+                if (view != null) {
+                    view.showIngredients(ingredients);
+                }
             }
             @Override
             public void onFailure(String message) {
@@ -214,7 +218,9 @@ public class SearchPresenter {
         repository.getAllAreas(new AreaCallback() {
             @Override
             public void onSuccess(List<Area> areas) {
-                view.showAreas(areas);
+                if (view != null) {
+                    view.showAreas(areas);
+                }
             }
             @Override
             public void onFailure(String message) {
