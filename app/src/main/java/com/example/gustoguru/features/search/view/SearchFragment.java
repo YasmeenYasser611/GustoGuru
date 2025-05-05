@@ -108,7 +108,7 @@ public class SearchFragment extends Fragment implements SearchView {
         try {
             animationView.setAnimation("search.json");
             animationView.setRepeatCount(0);
-            animationView.setSpeed(1.5f);
+            animationView.setSpeed(2.5f);
             animationView.loop(false);
 
             animationView.addAnimatorListener(new AnimatorListenerAdapter() {

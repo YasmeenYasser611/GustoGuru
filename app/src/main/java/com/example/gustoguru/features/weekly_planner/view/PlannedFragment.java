@@ -110,7 +110,7 @@ public class PlannedFragment extends Fragment implements PlannedView {
         try {
             animationView.setAnimation("weekly_planner.json");
             animationView.setRepeatCount(0);
-            animationView.setSpeed(1.5f);
+            animationView.setSpeed(2.5f);
             animationView.loop(false);
 
             animationView.addAnimatorListener(new AnimatorListenerAdapter() {

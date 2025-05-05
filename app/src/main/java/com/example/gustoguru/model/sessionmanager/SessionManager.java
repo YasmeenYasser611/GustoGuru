@@ -12,7 +12,8 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class SessionManager {
+public class SessionManager
+{
     private static final String PREF_NAME = "GustoGuruPref";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_USER_ID = "userId";
@@ -109,7 +110,8 @@ public class SessionManager {
         return null;
     }
 
-    private String getCurrentDate() {
+    private String getCurrentDate()
+    {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
     }
 }

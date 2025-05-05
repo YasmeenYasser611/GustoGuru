@@ -6,119 +6,152 @@
     android:background="@color/soft_peach">
 
     <!-- Content View (initially hidden) -->
-    <LinearLayout
-        android:id="@+id/content_view"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:padding="12dp">
+        android:fillViewport="true">
 
-        <!-- Search Bar -->
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
+            android:id="@+id/content_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search meals..."
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxBackgroundColor="@android:color/white">
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/searchEditText"
+            <!-- Search Bar with updated text color -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Search meals..."
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxBackgroundColor="@android:color/white"
+                app:hintTextColor="@color/secondary_text_color"
+                app:boxStrokeColor="@android:color/holo_purple">
 
-        <!-- Search Method Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:weightSum="4"
-            android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/primary_text_color"
+                    android:textColorHint="@color/secondary_text_color"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSearchByName"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
+            <!-- Search Method Buttons in two rows -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Name"
-                app:cornerRadius="8dp"/>
+                android:orientation="vertical"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSearchByIngredient"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Ingredient"
-                app:cornerRadius="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"/>
+                <!-- First row of buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSearchByCategory"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Category"
-                app:cornerRadius="8dp"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSearchByName"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Name"
+                        android:textColor="@android:color/holo_purple"
+                        app:strokeColor="@android:color/holo_purple"
+                        app:cornerRadius="8dp"
+                        android:layout_marginEnd="4dp"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSearchByCountry"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSearchByIngredient"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Ingredient"
+                        android:textColor="@android:color/holo_purple"
+                        app:strokeColor="@android:color/holo_purple"
+                        app:cornerRadius="8dp"/>
+                </LinearLayout>
+
+                <!-- Second row of buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_marginTop="4dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSearchByCategory"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Category"
+                        android:textColor="@android:color/holo_purple"
+                        app:strokeColor="@android:color/holo_purple"
+                        app:cornerRadius="8dp"
+                        android:layout_marginEnd="4dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSearchByCountry"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Country"
+                        android:textColor="@android:color/holo_purple"
+                        app:strokeColor="@android:color/holo_purple"
+                        app:cornerRadius="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Suggestions List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/suggestionsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:clipToPadding="false"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="horizontal"
+                android:visibility="visible"/>
+
+            <!-- Search Results Grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchResultsRecyclerView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Country"
-                app:cornerRadius="8dp"
-                android:layout_marginStart="4dp"/>
+                android:minHeight="200dp"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2" />
+
+            <!-- Progress Indicator -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressBar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:indicatorColor="@android:color/holo_purple"
+                android:indeterminate="true" />
         </LinearLayout>
-
-        <!-- Suggestions List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/suggestionsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:clipToPadding="false"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:orientation="horizontal"
-            android:visibility="visible"/>
-
-        <!-- Search Results Grid -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchResultsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingTop="8dp"
-            android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="2" />
-
-        <!-- Progress Indicator -->
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progressBar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            android:indeterminate="true" />
-    </LinearLayout>
+    </ScrollView>
 
     <!-- Animation View (shown first) -->
     <LinearLayout

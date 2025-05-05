@@ -7,127 +7,133 @@
     android:background="@color/soft_peach">
 
     <!-- Content View (initially hidden) -->
-    <LinearLayout
-        android:id="@+id/content_container"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal"
-        android:visibility="invisible">
+        android:fillViewport="true">
 
-        <!-- Back Button -->
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="start"
-            android:src="@android:drawable/ic_menu_revert"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back button"
-            android:padding="8dp"/>
-
-        <!-- Profile Image -->
-        <ImageView
-            android:id="@+id/profile_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_cute_chef"
-            android:background="@drawable/circle_background"
-            android:padding="16dp" />
-
-        <!-- Name Section -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal"
+            android:visibility="invisible">
 
-            <TextView
-                android:id="@+id/user_name"
+            <!-- Back Button -->
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="start"
+                android:src="@android:drawable/ic_menu_revert"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back button"
+                android:padding="8dp"/>
+
+            <!-- Profile Image -->
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_cute_chef"
+                android:background="@drawable/circle_background"
+                android:padding="16dp" />
+
+            <!-- Name Section -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"
-                tools:text="John Doe"/>
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <ImageButton
-                android:id="@+id/edit_name_button"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:src="@android:drawable/ic_menu_edit"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Edit name"/>
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    tools:text="John Doe"/>
+
+                <ImageButton
+                    android:id="@+id/edit_name_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Edit name"/>
+            </LinearLayout>
+
+            <!-- Email -->
+            <TextView
+                android:id="@+id/user_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"
+                android:textColor="@android:color/darker_gray"
+                android:fontFamily="sans-serif"
+                tools:text="john@example.com"/>
+
+            <!-- Favorites Button -->
+            <Button
+                android:id="@+id/favorites_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="⭐ My Favorites"
+                android:drawableLeft="@android:drawable/btn_star_big_on"
+                android:drawablePadding="8dp"
+                android:backgroundTint="@android:color/holo_purple"
+                android:textColor="@android:color/white"
+                android:padding="12dp"
+                android:fontFamily="sans-serif"/>
+
+            <!-- Planned Meals Button -->
+            <Button
+                android:id="@+id/planned_meals_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="🍽️ Planned Meals"
+                android:drawableLeft="@android:drawable/ic_menu_today"
+                android:drawablePadding="8dp"
+                android:backgroundTint="@android:color/holo_purple"
+                android:textColor="@android:color/white"
+                android:padding="12dp"
+                android:fontFamily="sans-serif"/>
+
+            <!-- Logout Button -->
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="🚪 Logout"
+                android:drawableLeft="@drawable/ic_logout"
+                android:drawablePadding="8dp"
+                android:backgroundTint="@android:color/holo_purple"
+                android:textColor="@android:color/white"
+                android:padding="12dp"
+                android:fontFamily="sans-serif"/>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"/>
         </LinearLayout>
-
-        <!-- Email -->
-        <TextView
-            android:id="@+id/user_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp"
-            android:textColor="@android:color/darker_gray"
-            android:fontFamily="sans-serif"
-            tools:text="john@example.com"/>
-
-        <!-- Favorites Button -->
-        <Button
-            android:id="@+id/favorites_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="⭐ My Favorites"
-            android:drawableLeft="@android:drawable/btn_star_big_on"
-            android:drawablePadding="8dp"
-            android:backgroundTint="@android:color/holo_purple"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:fontFamily="sans-serif"/>
-
-        <!-- Planned Meals Button -->
-        <Button
-            android:id="@+id/planned_meals_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="🍽️ Planned Meals"
-            android:drawableLeft="@android:drawable/ic_menu_today"
-            android:drawablePadding="8dp"
-            android:backgroundTint="@android:color/holo_purple"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:fontFamily="sans-serif"/>
-
-        <!-- Logout Button -->
-        <Button
-            android:id="@+id/logout_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="🚪 Logout"
-            android:drawableLeft="@drawable/ic_logout"
-            android:drawablePadding="8dp"
-            android:backgroundTint="@android:color/holo_purple"
-            android:textColor="@android:color/white"
-            android:padding="12dp"
-            android:fontFamily="sans-serif"/>
-
-        <!-- Progress Bar -->
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="24dp"
-            android:visibility="gone"/>
-    </LinearLayout>
+    </ScrollView>
 
     <!-- Animation View (shown first) -->
     <LinearLayout

@@ -104,7 +104,7 @@ public class ProfileFragment extends Fragment implements ProfileView {
             // If file exists, load the animation
             animationView.setAnimation("profile.json");
             animationView.setRepeatCount(0);
-            animationView.setSpeed(1.2f);
+            animationView.setSpeed(2.5f);
             animationView.loop(false);
 
             animationView.addAnimatorListener(new AnimatorListenerAdapter() {
