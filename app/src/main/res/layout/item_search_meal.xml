@@ -14,10 +14,12 @@
 
         <!-- Image with progress bar -->
         <RelativeLayout
+            android:id="@+id/image_container"
             android:layout_width="match_parent"
             android:layout_height="180dp">
 
-            <ImageView
+
+        <ImageView
                 android:id="@+id/iv_meal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -37,8 +39,9 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_alignBottom="@id/iv_meal"
+            android:layout_below="@id/image_container"
             android:background="@drawable/bottom_gradient" />
+
 
         <!-- Text content -->
         <TextView

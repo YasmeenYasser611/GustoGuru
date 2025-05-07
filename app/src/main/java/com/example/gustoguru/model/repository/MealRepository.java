@@ -215,12 +215,17 @@ public class MealRepository {
             @Override
             public void onSuccess(FirebaseUser user) {
                 // Initialize sync after successful login
+                System.out.println("Login success for user: " + user.getEmail());
+                callback.onSuccess(user);
                 initializeSync(user.getUid());
             }
 
             @Override
             public void onFailure(Exception e) {
                 // Handle error
+                System.out.println("Login failed with error: " + e.getMessage());
+                e.printStackTrace();
+                callback.onFailure(e);
             }
         });
     }
