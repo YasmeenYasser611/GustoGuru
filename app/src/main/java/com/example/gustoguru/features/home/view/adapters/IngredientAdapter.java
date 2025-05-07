@@ -38,9 +38,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     private List<Ingredient> ingredients;
     private OnIngredientClickListener listener;
 
-    public interface OnIngredientClickListener {
-        void onIngredientClick(Ingredient ingredient);
-    }
+
 
     public IngredientAdapter(Context context, List<Ingredient> ingredients, OnIngredientClickListener listener) {
         this.context = context;
@@ -177,5 +175,8 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
             imageViewThumb = itemView.findViewById(R.id.ivIngredientThumb);
             textViewIngredient = itemView.findViewById(R.id.tvIngredientName);
         }
+    }
+    public interface OnIngredientClickListener {
+        void onIngredientClick(Ingredient ingredient);
     }
 }

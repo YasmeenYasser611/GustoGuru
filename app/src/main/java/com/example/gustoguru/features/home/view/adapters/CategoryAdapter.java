@@ -40,9 +40,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     private List<Category> categories;
     private OnCategoryClickListener listener;
 
-    public interface OnCategoryClickListener {
-        void onCategoryClick(Category category);
-    }
+
 
     public CategoryAdapter(Context context, List<Category> categories, OnCategoryClickListener listener) {
         this.context = context;
@@ -187,5 +185,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             imageViewThumb = itemView.findViewById(R.id.imageViewThumb);
             layout = itemView.findViewById(R.id.layout);
         }
+    }
+
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category);
     }
 }

@@ -21,7 +21,8 @@ public class FavoritesPresenter {
     private LiveData<List<Meal>> favoritesLiveData;
     private Observer<List<Meal>> favoritesObserver;
 
-    public FavoritesPresenter(FavoritesView view, MealRepository repository) {
+    public FavoritesPresenter(FavoritesView view, MealRepository repository)
+    {
         this.view = view;
         this.repository = repository;
         this.favoritesObserver = new Observer<List<Meal>>() {

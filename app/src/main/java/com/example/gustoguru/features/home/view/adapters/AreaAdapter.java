@@ -40,9 +40,7 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.ViewHolder> {
     private List<Area> areas;
     private OnAreaClickListener listener;
 
-    public interface OnAreaClickListener {
-        void onAreaClick(Area area);
-    }
+
 
     public AreaAdapter(Context context, List<Area> areas, OnAreaClickListener listener) {
         this.context = context;
@@ -136,7 +134,8 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.ViewHolder> {
         });
     }
 
-    private void startOfflineAnimation(View view) {
+    private void startOfflineAnimation(View view)
+    {
         view.clearAnimation();
 
         // Shake animation
@@ -183,5 +182,9 @@ public class AreaAdapter extends RecyclerView.Adapter<AreaAdapter.ViewHolder> {
             imageViewFlag = itemView.findViewById(R.id.ivAreaFlag);
             layout = itemView.findViewById(R.id.areaLayout);
         }
+    }
+
+    public interface OnAreaClickListener {
+        void onAreaClick(Area area);
     }
 }

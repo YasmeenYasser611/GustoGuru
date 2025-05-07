@@ -116,13 +116,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
         }
     }
 
-    public interface OnMealClickListener {
-        void onClick(Meal meal);
-    }
-
-    public interface OnFavoriteClickListener {
-        void onClick(Meal meal, int position);
-    }
 
     public static class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
         private Context context;
@@ -186,4 +179,13 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
             }
         }
     }
+
+    public interface OnMealClickListener {
+        void onClick(Meal meal);
+    }
+
+    public interface OnFavoriteClickListener {
+        void onClick(Meal meal, int position);
+    }
+
 }
